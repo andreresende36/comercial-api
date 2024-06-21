@@ -1,0 +1,70 @@
+@startuml
+entity "Usuário" as Usuario {
+  +ID: int [PK]
+  --
+  Nome: string
+  Email: string
+  Senha: string
+  Avatar: string
+}
+
+entity "Sessao" as Sessao {
+  +ID: int [PK]
+}
+
+entity "Cliente" as Cliente {
+  +ID: int [PK]
+  --
+  Nome: string
+  CPF: string
+}
+
+entity "Endereço" as Endereco {
+  +ID: int [PK]
+  --
+  ClienteID: int [FK]
+  Logradouro: string
+  Numero: string
+  Complemento: string
+  Bairro: string
+  CEP: string
+  Cidade: string
+  Estado: string
+}
+
+entity "Telefone" as Telefone {
+  +ID: int [PK]
+  --
+  ClienteID: int [FK]
+  Numero: string
+}
+
+entity "Produto" as Produto {
+  +ID: int [PK]
+  --
+  Preco: decimal
+  Nome: string
+  Descricao: string
+  Categoria: string
+  Marca: string
+  Estoque: int
+}
+
+entity "Venda" as Venda {
+  +ID: int [PK]
+  --
+  ClienteID: int [FK]
+  ProdutoID: int [FK]
+  Quantidade: int
+  PrecoUnitario: decimal
+  PrecoTotal: decimal
+  Data: date
+  Hora: time
+}
+
+' Cardinality
+Cliente ||--o{ Endereco: "1:N"
+Cliente ||--o{ Telefone: "1:N"
+Cliente ||--o{ Venda: "1:N"
+Produto ||--o{ Venda: "1:N"
+@enduml
