@@ -24,4 +24,5 @@ Route.get('/', async () => {
   return { hello: 'world' };
 });
 
-Route.post('/users', 'UsersController.store');
+Route.post('/signup', 'UsersController.store');
+Route.put('/users/:id', 'UsersController.update');

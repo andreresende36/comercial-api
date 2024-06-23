@@ -17,6 +17,8 @@ entity "Cliente" as Cliente {
   --
   Nome: string
   CPF: string
+  Sexo: string
+  Nascimento: date
 }
 
 entity "Endereço" as Endereco {
