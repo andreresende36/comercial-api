@@ -26,3 +26,4 @@ Route.get('/', async () => {
 
 Route.post('/signup', 'UsersController.store');
 Route.put('/users/:id', 'UsersController.update');
+Route.post('/forgot-password', 'PasswordsController.forgotPassword');
