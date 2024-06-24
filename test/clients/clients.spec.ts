@@ -1,7 +1,9 @@
+import { DateTime } from 'luxon';
 import Database from '@ioc:Adonis/Lucid/Database';
 import { ClientFactory } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
+import Client from 'App/Models/Client';
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 const BASE_PAYLOAD = {
@@ -49,6 +51,7 @@ test.group('clients', async (group) => {
 
   test('it should return 422 when providing an invalid name', async (assert) => {
     const clientPayload = { ...BASE_PAYLOAD, name: 'A' }; // Mínimo 4 dígitos
+
     const { body } = await supertest(BASE_URL)
       .post('/clients/store')
       .send(clientPayload)
@@ -85,6 +88,30 @@ test.group('clients', async (group) => {
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
     assert.equal(body.status, 422);
+  });
+
+  test('it should show all registered clients', async (assert) => {
+    const numberOfClients = 10;
+    const clients = await ClientFactory.createMany(numberOfClients);
+    const { body } = await supertest(BASE_URL)
+      .get('/clients/index')
+      .expect(200);
+
+    const sortedClients = body.clients.sort(
+      (a: { id: number }, b: { id: number }) => a.id - b.id,
+    );
+
+    assert.equal(body.clients.length, clients.length);
+    clients.forEach((client, i) => {
+      assert.equal(sortedClients[i].id, client.id);
+      assert.equal(sortedClients[i].name, client.name);
+      assert.equal(sortedClients[i].cpf, client.cpf);
+      assert.equal(sortedClients[i].sex, client.sex);
+      assert.equal(
+        sortedClients[i].birth_date,
+        client.birthDate.toFormat('yyyy-MM-dd'),
+      );
+    });
   });
 
   group.beforeEach(async () => {
