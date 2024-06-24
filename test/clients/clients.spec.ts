@@ -1,19 +1,17 @@
-import { DateTime } from 'luxon';
 import Database from '@ioc:Adonis/Lucid/Database';
 import { ClientFactory } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
-import Client from 'App/Models/Client';
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 const BASE_PAYLOAD = {
   name: 'André Resende',
   cpf: '84247616005',
   sex: 'Masculino',
-  birthDate: '1995-01-09',
+  birthdate: '1995-01-09',
 };
 
-test.group('clients', async (group) => {
+test.group('Clients', async (group) => {
   test('it should create an user', async (assert) => {
     const { body } = await supertest(BASE_URL)
       .post('/clients/store')
@@ -24,7 +22,7 @@ test.group('clients', async (group) => {
     assert.equal(body.client.name, BASE_PAYLOAD.name);
     assert.equal(body.client.cpf, BASE_PAYLOAD.cpf);
     assert.equal(body.client.sex, BASE_PAYLOAD.sex);
-    assert.equal(body.client.birth_date, BASE_PAYLOAD.birthDate);
+    assert.equal(body.client.birthdate, BASE_PAYLOAD.birthdate);
   });
 
   test('it should return 422 when provide the same CPF twice', async (assert) => {
@@ -71,7 +69,7 @@ test.group('clients', async (group) => {
   });
 
   test('it should return 422 when providing an invalid birthdate', async (assert) => {
-    const clientPayload = { ...BASE_PAYLOAD, birthDate: '09-01-1995' }; //Correto: 1995-01-09
+    const clientPayload = { ...BASE_PAYLOAD, birthdate: '09-01-1995' }; //Correto: 1995-01-09
     const { body } = await supertest(BASE_URL)
       .post('/clients/store')
       .send(clientPayload)
@@ -90,27 +88,22 @@ test.group('clients', async (group) => {
     assert.equal(body.status, 422);
   });
 
-  test('it should show all registered clients', async (assert) => {
+  test('it should show all registered clients, ordered by id and only main data', async (assert) => {
     const numberOfClients = 10;
     const clients = await ClientFactory.createMany(numberOfClients);
     const { body } = await supertest(BASE_URL)
       .get('/clients/index')
       .expect(200);
 
-    const sortedClients = body.clients.sort(
-      (a: { id: number }, b: { id: number }) => a.id - b.id,
-    );
-
     assert.equal(body.clients.length, clients.length);
+
+    // id, name e cpf considerados os principais
     clients.forEach((client, i) => {
-      assert.equal(sortedClients[i].id, client.id);
-      assert.equal(sortedClients[i].name, client.name);
-      assert.equal(sortedClients[i].cpf, client.cpf);
-      assert.equal(sortedClients[i].sex, client.sex);
-      assert.equal(
-        sortedClients[i].birth_date,
-        client.birthDate.toFormat('yyyy-MM-dd'),
-      );
+      assert.equal(body.clients[i].id, client.id);
+      assert.equal(body.clients[i].name, client.name);
+      assert.equal(body.clients[i].cpf, client.cpf);
+      assert.notExists(body.clients[i].sex);
+      assert.notExists(body.clients[i].birthdate);
     });
   });
 

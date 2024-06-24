@@ -19,7 +19,7 @@ export const ClientFactory = Factory.define(Client, () => {
     name: fakerPT_BR.person.fullName(),
     cpf: fakerBr.br.cpf(),
     sex: fakerPT_BR.person.sex(),
-    birthDate: DateTime.fromJSDate(
+    birthdate: DateTime.fromJSDate(
       faker.date.birthdate({ min: 18, max: 70, mode: 'age' }),
     ),
   };

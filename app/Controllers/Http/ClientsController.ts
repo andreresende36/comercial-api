@@ -17,7 +17,9 @@ export default class ClientsController {
   }
 
   public async index({ response }: HttpContextContract) {
-    const clients = await Client.all();
+    const clients = await Client.query()
+      .select(['id', 'name', 'cpf'])
+      .orderBy('id', 'asc');
     return response.ok({ clients });
   }
 
@@ -33,7 +35,7 @@ export default class ClientsController {
   public async update({ params, request, response }: HttpContextContract) {
     try {
       const client = await Client.findOrFail(params.id);
-      const data = request.only(['name', 'cpf', 'gender', 'birthDate']);
+      const data = request.only(['name', 'cpf', 'gender', 'birthdate']);
       client.merge(data);
       await client.save();
       return response.status(200).json(client);

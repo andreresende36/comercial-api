@@ -27,7 +27,7 @@ export default class CreateClientValidator {
     name: schema.string({}, [rules.minLength(4)]),
     cpf: schema.string({}, [rules.cpf()]),
     sex: schema.string({}, [rules.sex()]),
-    birthDate: schema.date(),
+    birthdate: schema.date(),
   });
 
   /**

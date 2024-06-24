@@ -14,8 +14,8 @@ export default class Client extends BaseModel {
   @column()
   public sex: string;
 
-  @column.date({ columnName: 'birth_date' })
-  public birthDate: DateTime;
+  @column.date({ columnName: 'birthdate' })
+  public birthdate: DateTime;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;

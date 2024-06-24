@@ -9,7 +9,7 @@ export default class Clients extends BaseSchema {
       table.string('name').notNullable();
       table.string('cpf').notNullable().unique();
       table.string('sex').notNullable();
-      table.date('birth_date').notNullable();
+      table.date('birthdate').notNullable();
       table.timestamp('created_at', { useTz: true }).notNullable();
       table.timestamp('updated_at', { useTz: true }).notNullable();
     });
