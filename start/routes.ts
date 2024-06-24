@@ -29,4 +29,5 @@ Route.put('/users/:id', 'UsersController.update');
 Route.post('/forgot-password', 'PasswordsController.forgotPassword');
 Route.post('/reset-password', 'PasswordsController.resetPassword');
 Route.post('/clients/store', 'ClientsController.store');
+Route.put('/clients/update/:id', 'ClientsController.update');
 Route.get('/clients/index', 'ClientsController.index');

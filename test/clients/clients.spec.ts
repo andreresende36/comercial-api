@@ -1,3 +1,4 @@
+import { Sex } from '@faker-js/faker';
 import Database from '@ioc:Adonis/Lucid/Database';
 import { ClientFactory } from 'Database/factories';
 import test from 'japa';
@@ -25,7 +26,7 @@ test.group('Clients', async (group) => {
     assert.equal(body.client.birthdate, BASE_PAYLOAD.birthdate);
   });
 
-  test('it should return 422 when provide the same CPF twice', async (assert) => {
+  test('it should return 409 when provide the same CPF twice', async (assert) => {
     const { cpf } = await ClientFactory.create();
     const clientPayload = { ...BASE_PAYLOAD, cpf };
     const { body } = await supertest(BASE_URL)
@@ -105,6 +106,95 @@ test.group('Clients', async (group) => {
       assert.notExists(body.clients[i].sex);
       assert.notExists(body.clients[i].birthdate);
     });
+  });
+
+  // Apenas o CPF não pode ser alterado
+  test('it should update an client', async (assert) => {
+    const { id } = await ClientFactory.create();
+    const { body } = await supertest(BASE_URL)
+      .put(`/clients/update/${id}`)
+      .send({
+        name: BASE_PAYLOAD.name,
+        sex: BASE_PAYLOAD.sex,
+        birthdate: BASE_PAYLOAD.birthdate,
+      })
+      .expect(200);
+
+    assert.exists(body.client, 'Client undefined');
+    assert.equal(body.client.name, BASE_PAYLOAD.name);
+    assert.equal(body.client.sex, BASE_PAYLOAD.sex);
+    assert.equal(body.client.birthdate, BASE_PAYLOAD.birthdate);
+  });
+
+  test('it should return 422 when required data is not provided', async (assert) => {
+    const { id } = await ClientFactory.create();
+
+    const { body } = await supertest(BASE_URL)
+      .put(`/clients/update/${id}`)
+      .send({})
+      .expect(422);
+
+    assert.equal(body.code, 'BAD_REQUEST');
+    assert.equal(body.status, 422);
+    assert.include(body.message, 'no data provided');
+  });
+
+  test('it should return 403 when trying to update cpf', async (assert) => {
+    const client = await ClientFactory.create();
+
+    const { body } = await supertest(BASE_URL)
+      .put(`/clients/update/${client.id}`)
+      .send({ ...BASE_PAYLOAD, cpf: '11111111111' })
+      .expect(403);
+
+    assert.equal(body.status, 403);
+    assert.equal(body.code, 'FORBIDDEN');
+    assert.equal(body.message, 'cpf cannot be updated');
+
+    await client.refresh();
+    assert.notEqual(client.cpf, '11111111111');
+  });
+
+  test('it should return 422 when provided an invalid name', async (assert) => {
+    const { id } = await ClientFactory.create();
+    const clientPayload = {
+      name: 'A',
+    };
+    const { body } = await supertest(BASE_URL)
+      .put(`/clients/update/${id}`)
+      .send(clientPayload)
+      .expect(422);
+
+    assert.equal(body.code, 'BAD_REQUEST');
+    assert.equal(body.status, 422);
+  });
+
+  test('it should return 422 when provided an invalid sex', async (assert) => {
+    const { id } = await ClientFactory.create();
+    const clientPayload = {
+      sex: 'abc',
+    };
+    const { body } = await supertest(BASE_URL)
+      .put(`/clients/update/${id}`)
+      .send(clientPayload)
+      .expect(422);
+
+    assert.equal(body.code, 'BAD_REQUEST');
+    assert.equal(body.status, 422);
+  });
+
+  test('it should return 422 when provided an invalid birthdate', async (assert) => {
+    const { id } = await ClientFactory.create();
+    const clientPayload = {
+      birthdate: '09-01-1995',
+    };
+    const { body } = await supertest(BASE_URL)
+      .put(`/clients/update/${id}`)
+      .send(clientPayload)
+      .expect(422);
+
+    assert.equal(body.code, 'BAD_REQUEST');
+    assert.equal(body.status, 422);
   });
 
   group.beforeEach(async () => {
