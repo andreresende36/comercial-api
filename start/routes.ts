@@ -28,3 +28,4 @@ Route.post('/signup', 'UsersController.store');
 Route.put('/users/:id', 'UsersController.update');
 Route.post('/forgot-password', 'PasswordsController.forgotPassword');
 Route.post('/reset-password', 'PasswordsController.resetPassword');
+Route.post('/clients/store', 'ClientsController.store');
