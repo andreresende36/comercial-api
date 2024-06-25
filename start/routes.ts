@@ -21,13 +21,31 @@
 import Route from '@ioc:Adonis/Core/Route';
 
 Route.get('/', async () => {
-  return { hello: 'world' };
+  return { message: 'Seja bem-vindo!' };
 });
 
 Route.post('/signup', 'UsersController.store');
 Route.put('/users/:id', 'UsersController.update');
+
 Route.post('/forgot-password', 'PasswordsController.forgotPassword');
 Route.post('/reset-password', 'PasswordsController.resetPassword');
+
+Route.get('/clients/index', 'ClientsController.index');
 Route.post('/clients/store', 'ClientsController.store');
 Route.put('/clients/update/:id', 'ClientsController.update');
-Route.get('/clients/index', 'ClientsController.index');
+Route.delete('/clients/delete/:id', 'ClientsController.delete');
+
+Route.get('/clients/:id/addresses', 'AddressesController.index');
+Route.post('/clients/:id/addresses', 'AddressesController.store');
+Route.get('/clients/:id/addresses/:addressId', 'AddressesController.show');
+Route.put('/clients/:id/addresses/:addressId', 'AddressesController.update');
+Route.delete(
+  '/clients/:id/addresses/:address-id',
+  'AddressesController.delete',
+);
+
+Route.get('/clients/:id/phones', 'PhonesController.index');
+Route.post('/clients/:id/phones', 'PhonesController.store');
+Route.get('/clients/:id/phones/:phoneId', 'PhonesController.show');
+Route.put('/clients/:id/phones/:phoneId', 'PhonesController.update');
+Route.delete('/clients/:id/phones/:phoneId', 'PhonesController.delete');

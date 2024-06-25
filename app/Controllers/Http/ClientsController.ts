@@ -131,15 +131,10 @@ export default class ClientsController {
     return response.ok({ client: clientById });
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
-    try {
-      const client = await Client.findOrFail(params.id);
-      await client.delete();
-      return response
-        .status(200)
-        .json({ message: 'Client deleted successfully' });
-    } catch (error) {
-      return response.status(404).json({ message: 'Client not found' });
-    }
+  public async delete({ request, response }: HttpContextContract) {
+    const id = request.param('id');
+    const client = await Client.findOrFail(id);
+    await client.delete();
+    return response.ok({ message: 'Client deleted successfully' });
   }
 }

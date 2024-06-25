@@ -3,6 +3,7 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import { clientBuilder } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
+import Client from 'App/Models/Client';
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 const BASE_PAYLOAD = {
@@ -192,9 +193,6 @@ test.group('Clients', async (group) => {
       state,
       zipCode,
     } = BASE_PAYLOAD;
-
-    console.log(BASE_PAYLOAD);
-
     const { body } = await supertest(BASE_URL)
       .put(`/clients/update/${client?.id}`)
       .send({
@@ -351,6 +349,19 @@ test.group('Clients', async (group) => {
     assert.equal(body.code, 'BAD_REQUEST');
     assert.equal(body.status, 422);
     assert.notEqual(client?.phones[0].phoneNumber, clientPayload.phoneNumber);
+  });
+
+  test('it should delete a client and return 200', async (assert) => {
+    const { client } = await clientBuilder(1);
+
+    const { body } = await supertest(BASE_URL)
+      .delete(`/clients/delete/${client?.id}`)
+      .expect(200);
+
+    const searchDeletedClient = await Client.findBy('id', client?.id);
+
+    assert.equal(body.message, 'Client deleted successfully');
+    assert.notExists(searchDeletedClient);
   });
 
   group.beforeEach(async () => {
