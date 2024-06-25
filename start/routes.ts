@@ -37,15 +37,12 @@ Route.delete('/clients/delete/:id', 'ClientsController.delete');
 
 Route.get('/clients/:id/addresses', 'AddressesController.index');
 Route.post('/clients/:id/addresses', 'AddressesController.store');
-Route.get('/clients/:id/addresses/:addressId', 'AddressesController.show');
-Route.put('/clients/:id/addresses/:addressId', 'AddressesController.update');
-Route.delete(
-  '/clients/:id/addresses/:address-id',
-  'AddressesController.delete',
-);
+Route.get('/clients/addresses/:id', 'AddressesController.show');
+Route.put('/clients/addresses/:id', 'AddressesController.update');
+Route.delete('/clients/addresses/:id', 'AddressesController.delete');
 
 Route.get('/clients/:id/phones', 'PhonesController.index');
 Route.post('/clients/:id/phones', 'PhonesController.store');
-Route.get('/clients/:id/phones/:phoneId', 'PhonesController.show');
-Route.put('/clients/:id/phones/:phoneId', 'PhonesController.update');
-Route.delete('/clients/:id/phones/:phoneId', 'PhonesController.delete');
+Route.get('/clients/phones/:id', 'PhonesController.show');
+Route.put('/clients/phones/:id', 'PhonesController.update');
+Route.delete('/clients/phones/:id', 'PhonesController.delete');

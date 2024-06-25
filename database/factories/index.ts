@@ -37,14 +37,14 @@ export const AddressFactory = Factory.define(Address, () => {
     city: fakerPT_BR.location.city(),
     state: fakerPT_BR.location.state({ abbreviated: true }),
     country: fakerPT_BR.location.country(),
-    clientId: 0,
+    clientId: 1,
   };
 }).build();
 
 export const PhoneFactory = Factory.define(Phone, () => {
   return {
     phoneNumber: fakerPT_BR.phone.number(),
-    clientId: 0,
+    clientId: 1,
   };
 }).build();
 

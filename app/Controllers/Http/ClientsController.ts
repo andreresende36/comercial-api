@@ -97,38 +97,30 @@ export default class ClientsController {
     }
 
     const id = request.param('id');
-    const clientById = await Client.findOrFail(id);
+    const client = await Client.findOrFail(id);
+    await client.load('addresses');
+    await client.load('phones');
 
-    await clientById.load('addresses');
-    await clientById.load('phones');
+    const _address = client.addresses[0];
+    const phone = client.phones[0];
 
-    clientById.name = name ?? clientById.name;
-    clientById.sex = sex ?? clientById.sex;
-    clientById.birthdate = birthdate ?? clientById.birthdate;
-    if (clientById.addresses.length > 0) {
-      // É possível atualizar junto o endereço principal
-      const clientAddress = clientById.addresses[0];
-      clientAddress.address = address ?? clientAddress.address;
-      clientAddress.number = number ?? clientAddress.number;
-      clientAddress.complement = complement ?? clientAddress.complement;
-      clientAddress.neighborhood = neighborhood ?? clientAddress.neighborhood;
-      clientAddress.city = city ?? clientAddress.city;
-      clientAddress.state = state ?? clientAddress.state;
-      clientAddress.zipCode = zipCode ?? clientAddress.zipCode;
-      clientAddress.country = country ?? clientAddress.country;
+    client.merge({ name, sex, birthdate });
+    _address.merge({
+      address,
+      city,
+      complement,
+      country,
+      neighborhood,
+      number,
+      zipCode,
+      state,
+    });
+    phone.merge({ phoneNumber });
 
-      await clientAddress.save();
-    }
-
-    if (clientById.phones.length > 0) {
-      // É possível atualizar junto o telefone principal
-      const clientPhone = clientById.phones[0];
-      clientPhone.phoneNumber = phoneNumber ?? clientPhone.phoneNumber;
-      await clientPhone.save();
-    }
-
-    await clientById.save();
-    return response.ok({ client: clientById });
+    await client.save();
+    await _address.save();
+    await phone.save();
+    return response.ok({ client: client });
   }
 
   public async delete({ request, response }: HttpContextContract) {
