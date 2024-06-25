@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon';
-import { column, BaseModel } from '@ioc:Adonis/Lucid/Orm';
+import { column, BaseModel, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm';
+import Address from './Address';
+import Phone from './Phone';
 
 export default class Client extends BaseModel {
   @column({ isPrimary: true })
@@ -13,6 +15,16 @@ export default class Client extends BaseModel {
 
   @column()
   public sex: string;
+
+  @hasMany(() => Address, {
+    foreignKey: 'clientId',
+  })
+  public addresses: HasMany<typeof Address>;
+
+  @hasMany(() => Phone, {
+    foreignKey: 'clientId',
+  })
+  public phones: HasMany<typeof Phone>;
 
   @column.date({ columnName: 'birthdate' })
   public birthdate: DateTime;
