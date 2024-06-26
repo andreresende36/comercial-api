@@ -1,31 +1,54 @@
-import { DateTime } from 'luxon';
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm';
+import {
+  BaseModel,
+  column,
+  belongsTo,
+  BelongsTo,
+  manyToMany,
+  ManyToMany,
+} from '@ioc:Adonis/Lucid/Orm';
+import ProductCategory from './ProductCategory';
+import ProductBrand from './ProductBrand';
+import Purchase from './Purchase';
 
 export default class Product extends BaseModel {
   @column({ isPrimary: true })
   public id: number;
 
   @column()
-  public name: string;
+  public price: number;
 
   @column()
-  public price: number;
+  public name: string;
 
   @column()
   public description: string;
 
   @column()
-  public category: string;
-
-  @column()
-  public brand: string;
-
-  @column()
   public stock: number;
 
-  @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime;
+  @column({ columnName: 'category_id' })
+  public categoryId: number;
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime;
+  @belongsTo(() => ProductCategory, {
+    foreignKey: 'categoryId',
+  })
+  public category: BelongsTo<typeof ProductCategory>;
+
+  @column({ columnName: 'brand_id' })
+  public brandId: number;
+
+  @belongsTo(() => ProductBrand, {
+    foreignKey: 'brandId',
+  })
+  public brand: BelongsTo<typeof ProductBrand>;
+
+  @manyToMany(() => Purchase, {
+    pivotTable: 'purchase_products',
+    localKey: 'id',
+    pivotForeignKey: 'product_id',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'purchase_id',
+    pivotTimestamps: true,
+  })
+  public purchases: ManyToMany<typeof Purchase>;
 }

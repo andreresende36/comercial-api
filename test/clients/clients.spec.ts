@@ -1,4 +1,3 @@
-import { DateTime, Settings } from 'luxon';
 import Database from '@ioc:Adonis/Lucid/Database';
 import { clientBuilder } from 'Database/factories';
 import test from 'japa';
@@ -25,7 +24,7 @@ const BASE_PAYLOAD = {
 test.group('Clients', async (group) => {
   test('it should create an client', async (assert) => {
     const { body } = await supertest(BASE_URL)
-      .post('/clients/store')
+      .post('/clients')
       .send(BASE_PAYLOAD)
       .expect(201);
 
@@ -52,7 +51,7 @@ test.group('Clients', async (group) => {
     const clientPayload = { ...BASE_PAYLOAD };
     clientPayload.cpf = client?.cpf!;
     const { body } = await supertest(BASE_URL)
-      .post('/clients/store')
+      .post('/clients')
       .send(clientPayload)
       .expect(409);
 
@@ -63,7 +62,7 @@ test.group('Clients', async (group) => {
 
   test('it should return 422 when required data is not provided', async (assert) => {
     const { body } = await supertest(BASE_URL)
-      .post('/clients/store')
+      .post('/clients')
       .send({})
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -74,7 +73,7 @@ test.group('Clients', async (group) => {
     const clientPayload = { ...BASE_PAYLOAD }; // Mínimo 4 dígitos
     clientPayload.name = 'A';
     const { body } = await supertest(BASE_URL)
-      .post('/clients/store')
+      .post('/clients')
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -85,7 +84,7 @@ test.group('Clients', async (group) => {
     const clientPayload = { ...BASE_PAYLOAD };
     clientPayload.cpf = '11111111111';
     const { body } = await supertest(BASE_URL)
-      .post('/clients/store')
+      .post('/clients')
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -96,7 +95,7 @@ test.group('Clients', async (group) => {
     const clientPayload = { ...BASE_PAYLOAD };
     clientPayload.birthdate = '09-01-1995'; //Correto: 1995-01-09
     const { body } = await supertest(BASE_URL)
-      .post('/clients/store')
+      .post('/clients')
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -107,7 +106,7 @@ test.group('Clients', async (group) => {
     const clientPayload = { ...BASE_PAYLOAD };
     clientPayload.sex = 'abc'; //Masculino, Feminino ou Outros
     const { body } = await supertest(BASE_URL)
-      .post('/clients/store')
+      .post('/clients')
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -118,7 +117,7 @@ test.group('Clients', async (group) => {
     const clientPayload = { ...BASE_PAYLOAD };
     clientPayload.zipCode = '123';
     const { body } = await supertest(BASE_URL)
-      .post('/clients/store')
+      .post('/clients')
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -129,7 +128,7 @@ test.group('Clients', async (group) => {
     const clientPayload = { ...BASE_PAYLOAD };
     clientPayload.state = 'ABC1';
     const { body } = await supertest(BASE_URL)
-      .post('/clients/store')
+      .post('/clients')
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -140,7 +139,7 @@ test.group('Clients', async (group) => {
     const clientPayload = { ...BASE_PAYLOAD };
     clientPayload.phoneNumber = '123';
     const { body } = await supertest(BASE_URL)
-      .post('/clients/store')
+      .post('/clients')
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -150,9 +149,7 @@ test.group('Clients', async (group) => {
   test('it should show all registered clients, ordered by id and only main data', async (assert) => {
     const numberOfClients = 10;
     const { clients, addresses } = await clientBuilder(numberOfClients);
-    const { body } = await supertest(BASE_URL)
-      .get('/clients/index')
-      .expect(200);
+    const { body } = await supertest(BASE_URL).get('/clients').expect(200);
 
     assert.equal(body.clients.length, clients?.length);
 
@@ -194,7 +191,7 @@ test.group('Clients', async (group) => {
       zipCode,
     } = BASE_PAYLOAD;
     const { body } = await supertest(BASE_URL)
-      .put(`/clients/update/${client?.id}`)
+      .put(`/clients/${client?.id}`)
       .send({
         name,
         sex,
@@ -234,7 +231,7 @@ test.group('Clients', async (group) => {
     const { client } = await clientBuilder(1);
 
     const { body } = await supertest(BASE_URL)
-      .put(`/clients/update/${client?.id}`)
+      .put(`/clients/${client?.id}`)
       .send({})
       .expect(422);
 
@@ -248,7 +245,7 @@ test.group('Clients', async (group) => {
     const clientPayload = { ...BASE_PAYLOAD };
 
     const { body } = await supertest(BASE_URL)
-      .put(`/clients/update/${client?.id}`)
+      .put(`/clients/${client?.id}`)
       .send(clientPayload)
       .expect(403);
 
@@ -266,7 +263,7 @@ test.group('Clients', async (group) => {
       name: 'A',
     };
     const { body } = await supertest(BASE_URL)
-      .put(`/clients/update/${client?.id}`)
+      .put(`/clients/${client?.id}`)
       .send(clientPayload)
       .expect(422);
 
@@ -281,7 +278,7 @@ test.group('Clients', async (group) => {
       sex: 'abc',
     };
     const { body } = await supertest(BASE_URL)
-      .put(`/clients/update/${client?.id}`)
+      .put(`/clients/${client?.id}`)
       .send(clientPayload)
       .expect(422);
 
@@ -296,7 +293,7 @@ test.group('Clients', async (group) => {
       birthdate: '09-01-1995',
     };
     const { body } = await supertest(BASE_URL)
-      .put(`/clients/update/${client?.id}`)
+      .put(`/clients/${client?.id}`)
       .send(clientPayload)
       .expect(422);
 
@@ -313,7 +310,7 @@ test.group('Clients', async (group) => {
       state: 'ABC1',
     };
     const { body } = await supertest(BASE_URL)
-      .put(`/clients/update/${client?.id}`)
+      .put(`/clients/${client?.id}`)
       .send(clientPayload)
       .expect(422);
     await client?.load('addresses');
@@ -327,7 +324,7 @@ test.group('Clients', async (group) => {
       zipCode: '123',
     };
     const { body } = await supertest(BASE_URL)
-      .put(`/clients/update/${client?.id}`)
+      .put(`/clients/${client?.id}`)
       .send(clientPayload)
       .expect(422);
     await client?.load('addresses');
@@ -341,7 +338,7 @@ test.group('Clients', async (group) => {
       phoneNumber: '123',
     };
     const { body } = await supertest(BASE_URL)
-      .put(`/clients/update/${client?.id}`)
+      .put(`/clients/${client?.id}`)
       .send(clientPayload)
       .expect(422);
 
@@ -355,7 +352,7 @@ test.group('Clients', async (group) => {
     const { client } = await clientBuilder(1);
 
     const { body } = await supertest(BASE_URL)
-      .delete(`/clients/delete/${client?.id}`)
+      .delete(`/clients/${client?.id}`)
       .expect(200);
 
     const searchDeletedClient = await Client.findBy('id', client?.id);

@@ -16,6 +16,9 @@ export default class Client extends BaseModel {
   @column()
   public sex: string;
 
+  @column.date()
+  public birthdate: DateTime;
+
   @hasMany(() => Address, {
     foreignKey: 'clientId',
   })
@@ -25,9 +28,6 @@ export default class Client extends BaseModel {
     foreignKey: 'clientId',
   })
   public phones: HasMany<typeof Phone>;
-
-  @column.date({ columnName: 'birthdate' })
-  public birthdate: DateTime;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;

@@ -12,6 +12,7 @@ export default class LinkTokens extends BaseSchema {
         .unsigned()
         .references('id')
         .inTable('users')
+        .onDelete('CASCADE')
         .notNullable();
 
       /**

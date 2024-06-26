@@ -30,10 +30,10 @@ Route.put('/users/:id', 'UsersController.update');
 Route.post('/forgot-password', 'PasswordsController.forgotPassword');
 Route.post('/reset-password', 'PasswordsController.resetPassword');
 
-Route.get('/clients/index', 'ClientsController.index');
-Route.post('/clients/store', 'ClientsController.store');
-Route.put('/clients/update/:id', 'ClientsController.update');
-Route.delete('/clients/delete/:id', 'ClientsController.delete');
+Route.get('/clients', 'ClientsController.index');
+Route.post('/clients', 'ClientsController.store');
+Route.put('/clients/:id', 'ClientsController.update');
+Route.delete('/clients/:id', 'ClientsController.delete');
 
 Route.get('/clients/:id/addresses', 'AddressesController.index');
 Route.post('/clients/:id/addresses', 'AddressesController.store');
@@ -46,3 +46,15 @@ Route.post('/clients/:id/phones', 'PhonesController.store');
 Route.get('/clients/phones/:id', 'PhonesController.show');
 Route.put('/clients/phones/:id', 'PhonesController.update');
 Route.delete('/clients/phones/:id', 'PhonesController.delete');
+
+Route.get('/products/categories', 'ProductCategoriesController.index');
+Route.post('/products/categories', 'ProductCategoriesController.store');
+Route.get('/products/categories/:id', 'ProductCategoriesController.show');
+Route.put('/products/categories/:id', 'ProductCategoriesController.update');
+Route.delete('/products/categories/:id', 'ProductCategoriesController.delete');
+
+Route.get('/products/brands', 'ProductBrandsController.index');
+Route.post('/products/brands', 'ProductBrandsController.store');
+Route.get('/products/brands/:id', 'ProductBrandsController.show');
+Route.put('/products/brands/:id', 'ProductBrandsController.update');
+Route.delete('/products/brands/:id', 'ProductBrandsController.delete');

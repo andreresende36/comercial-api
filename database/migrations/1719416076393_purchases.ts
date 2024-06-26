@@ -1,19 +1,17 @@
+// database/migrations/xxxx_create_purchases.ts
 import BaseSchema from '@ioc:Adonis/Lucid/Schema';
 
-export default class Addresses extends BaseSchema {
-  protected tableName = 'addresses';
+export default class Purchases extends BaseSchema {
+  protected tableName = 'purchases';
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary();
-      table.string('address').notNullable();
-      table.string('number');
-      table.string('complement');
-      table.string('neighborhood');
-      table.string('zip_code').notNullable();
-      table.string('city').notNullable();
-      table.string('state').notNullable();
-      table.string('country').notNullable();
+      table.integer('quantity').notNullable();
+      table.float('unit_price').notNullable();
+      table.float('total_price').notNullable();
+      table.date('date').notNullable();
+      table.time('time').notNullable();
       table
         .integer('client_id')
         .unsigned()
