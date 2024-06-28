@@ -62,15 +62,35 @@ export default class ClientsController {
     return response.ok({ clients });
   }
 
-  // public async show({ params, response }: HttpContextContract) {
-  //   try {
-  //     const client = await Client.findOrFail(params.id);
-  //     return response.ok({ client });
-  //   } catch (error) {
-  //     return response.status(404).json({ message: 'Client not found' });
-  //   }
-  // }
+  public async show({ request, response }: HttpContextContract) {
+    const id = request.param('id');
+    const month = request.qs().month;
+    const year = request.qs().year;
 
+    const clientQuery = Client.query()
+      .where('id', id)
+      .preload('purchases', (query) => {
+        query.preload('product');
+        if (month && year) {
+          query.whereRaw(
+            'strftime("%m", date) = ? AND strftime("%Y", date) = ?',
+            [String(month).padStart(2, '0'), year],
+          );
+        } else if (month) {
+          query.whereRaw('strftime("%m", date) = ?', [
+            String(month).padStart(2, '0'),
+          ]);
+        } else if (year) {
+          query.whereRaw('strftime("%Y", date) = ?', [year]);
+        }
+        query.orderBy('date', 'desc');
+      })
+      .preload('addresses')
+      .preload('phones');
+
+    const client = await clientQuery.firstOrFail();
+    return response.ok({ client });
+  }
   public async update({ request, response }: HttpContextContract) {
     const {
       name,

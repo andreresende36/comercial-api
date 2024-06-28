@@ -9,13 +9,19 @@ export default class Purchases extends BaseSchema {
       table.increments('id').primary();
       table.integer('quantity').notNullable();
       table.float('unit_price').notNullable();
-      table.float('total_price').notNullable();
+      table.float('total_price');
       table.date('date').notNullable();
       table.time('time').notNullable();
       table
         .integer('client_id')
         .unsigned()
         .references('clients.id')
+        .onDelete('CASCADE')
+        .notNullable();
+      table
+        .integer('product_id')
+        .unsigned()
+        .references('products.id')
         .onDelete('CASCADE')
         .notNullable();
       table.timestamp('created_at', { useTz: true });

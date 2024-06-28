@@ -3,12 +3,14 @@ import {
   column,
   belongsTo,
   BelongsTo,
-  manyToMany,
-  ManyToMany,
+  scope,
+  HasMany,
+  hasMany,
 } from '@ioc:Adonis/Lucid/Orm';
 import ProductCategory from './ProductCategory';
 import ProductBrand from './ProductBrand';
 import Purchase from './Purchase';
+import { DateTime } from 'luxon';
 
 export default class Product extends BaseModel {
   @column({ isPrimary: true })
@@ -42,13 +44,26 @@ export default class Product extends BaseModel {
   })
   public brand: BelongsTo<typeof ProductBrand>;
 
-  @manyToMany(() => Purchase, {
-    pivotTable: 'purchase_products',
-    localKey: 'id',
-    pivotForeignKey: 'product_id',
-    relatedKey: 'id',
-    pivotRelatedForeignKey: 'purchase_id',
-    pivotTimestamps: true,
+  @hasMany(() => Purchase, {
+    foreignKey: 'productId',
   })
-  public purchases: ManyToMany<typeof Purchase>;
+  public purchases: HasMany<typeof Purchase>;
+
+  @column.dateTime({ autoCreate: true, serializeAs: null })
+  public createdAt: DateTime;
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
+  public updatedAt: DateTime;
+
+  @column.dateTime({ serializeAs: null })
+  public deletedAt: DateTime | null;
+
+  public static ignoreDeleted = scope((query) => {
+    query.whereNull('deletedAt');
+  });
+
+  public async delete() {
+    this.deletedAt = DateTime.local();
+    await this.save();
+  }
 }

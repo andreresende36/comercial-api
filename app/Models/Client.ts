@@ -1,7 +1,14 @@
 import { DateTime } from 'luxon';
-import { column, BaseModel, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm';
+import {
+  column,
+  BaseModel,
+  hasMany,
+  HasMany,
+  beforeDelete,
+} from '@ioc:Adonis/Lucid/Orm';
 import Address from './Address';
 import Phone from './Phone';
+import Purchase from './Purchase';
 
 export default class Client extends BaseModel {
   @column({ isPrimary: true })
@@ -29,9 +36,21 @@ export default class Client extends BaseModel {
   })
   public phones: HasMany<typeof Phone>;
 
-  @column.dateTime({ autoCreate: true })
+  @hasMany(() => Purchase, {
+    foreignKey: 'clientId',
+  })
+  public purchases: HasMany<typeof Purchase>;
+
+  @column.dateTime({ autoCreate: true, serializeAs: null })
   public createdAt: DateTime;
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
   public updatedAt: DateTime;
+
+  @beforeDelete()
+  public static async deleteRelated(client: Client) {
+    await client.related('addresses').query().delete();
+    await client.related('phones').query().delete();
+    await client.related('purchases').query().delete();
+  }
 }

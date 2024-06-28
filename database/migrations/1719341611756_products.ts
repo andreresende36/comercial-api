@@ -9,8 +9,18 @@ export default class Products extends BaseSchema {
       table.string('name', 255).notNullable();
       table.decimal('price', 10, 2).notNullable();
       table.text('description').notNullable();
-      table.string('category', 100).notNullable();
-      table.string('brand', 100).notNullable();
+      table
+        .integer('category_id')
+        .unsigned()
+        .references('product_categories.id')
+        .onDelete('CASCADE')
+        .notNullable();
+      table
+        .integer('brand_id')
+        .unsigned()
+        .references('product_brands.id')
+        .onDelete('CASCADE')
+        .notNullable();
       table.integer('stock').unsigned().defaultTo(0);
       table.timestamp('created_at', { useTz: true });
       table.timestamp('updated_at', { useTz: true });

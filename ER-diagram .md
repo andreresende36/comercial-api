@@ -58,10 +58,7 @@ erDiagram
         date date
         time time
         int client_id FK
-    }
-    PURCHASE_PRODUCTS {
-        int purchase_id PK
-        int product_id PK
+        int product_id FK
     }
     LINK_TOKENS {
         int ID PK
@@ -72,8 +69,7 @@ erDiagram
     CLIENTS ||--o{ ADDRESSES : has
     CLIENTS ||--o{ PHONES : has
     CLIENTS ||--o{ PURCHASES : makes
-    PURCHASES ||--o{ PURCHASE_PRODUCTS : includes
-    PRODUCTS ||--o{ PURCHASE_PRODUCTS : part_of
+    PURCHASES }o--|| PRODUCTS : part_of
     PRODUCTS }o--|| PRODUCT_CATEGORIES : has
     PRODUCTS }o--|| PRODUCT_BRANDS : has
     USERS ||--o{ LINK_TOKENS : has

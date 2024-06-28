@@ -6,7 +6,9 @@ import BadRequest from 'App/Exceptions/BadRequestException';
 
 export default class AddressesController {
   public async index({ response }: HttpContextContract) {
-    const addresses = await Address.query().orderBy('id', 'asc');
+    const addresses = await Address.query()
+      .preload('client')
+      .orderBy('id', 'asc');
     return response.ok({ addresses });
   }
 
