@@ -1,8 +1,9 @@
 import Database from '@ioc:Adonis/Lucid/Database';
-import { factoryBuilder } from 'Database/factories';
+import { PurchaseFactory, factoryBuilder } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
 import Client from 'App/Models/Client';
+import { DateTime } from 'luxon';
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 const BASE_PAYLOAD = {
@@ -346,6 +347,30 @@ test.group('Clients', async (group) => {
     assert.equal(body.code, 'BAD_REQUEST');
     assert.equal(body.status, 422);
     assert.notEqual(client?.phones[0].phoneNumber, clientPayload.phoneNumber);
+  });
+
+  test.only('it should show a single client and return 200, with his purchases ordered by date, first dates first', async (assert) => {
+    const { client } = await factoryBuilder(1);
+    for (let index = 0; index < 5; index++) {
+      await PurchaseFactory.create();
+    }
+    await client?.load('purchases');
+
+    const { body } = await supertest(BASE_URL)
+      .get(`/clients/${client?.id}`)
+      .expect(200);
+
+    const sortedPurchases = client?.purchases.sort((a, b) => {
+      const dateA = a.date.toMillis();
+      const dateB = b.date.toMillis();
+      return dateB - dateA;
+    });
+
+    assert.equal(body.client.purchases.length, 6);
+    sortedPurchases?.forEach((purchase, i) => {
+      delete body.client.purchases[i].product;
+      assert.deepEqual(purchase.serialize(), body.client.purchases[i]);
+    });
   });
 
   test('it should delete a client and return 200', async (assert) => {

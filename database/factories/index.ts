@@ -79,7 +79,7 @@ export const ProductCategoryFactory = Factory.define(ProductCategory, () => {
 export const PurchaseFactory = Factory.define(Purchase, () => {
   const quantity = fakerPT_BR.number.int({ min: 1, max: 30 });
   const unitPrice = fakerPT_BR.number.float({ fractionDigits: 2 });
-  const randomDate = faker.date.recent();
+  const randomDate = faker.date.past({ years: 5 });
   const dateTime = DateTime.fromJSDate(randomDate).setZone('America/Sao_Paulo');
   return {
     quantity,
