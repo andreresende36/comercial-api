@@ -1,5 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database';
-import { clientBuilder } from 'Database/factories';
+import { factoryBuilder } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
 import Client from 'App/Models/Client';
@@ -46,7 +46,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 409 when provide the same CPF twice', async (assert) => {
-    const { client } = await clientBuilder(1);
+    const { client } = await factoryBuilder(1);
 
     const clientPayload = { ...BASE_PAYLOAD };
     clientPayload.cpf = client?.cpf!;
@@ -148,7 +148,7 @@ test.group('Clients', async (group) => {
 
   test('it should show all registered clients, ordered by id and only main data', async (assert) => {
     const numberOfClients = 10;
-    const { clients, addresses } = await clientBuilder(numberOfClients);
+    const { clients, addresses } = await factoryBuilder(numberOfClients);
     const { body } = await supertest(BASE_URL).get('/clients').expect(200);
 
     assert.equal(body.clients.length, clients?.length);
@@ -175,7 +175,7 @@ test.group('Clients', async (group) => {
 
   // Apenas o CPF não pode ser alterado
   test('it should update an client', async (assert) => {
-    const { client } = await clientBuilder(1);
+    const { client } = await factoryBuilder(1);
     const {
       name,
       sex,
@@ -228,7 +228,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 422 when required data is not provided', async (assert) => {
-    const { client } = await clientBuilder(1);
+    const { client } = await factoryBuilder(1);
 
     const { body } = await supertest(BASE_URL)
       .put(`/clients/${client?.id}`)
@@ -241,7 +241,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 403 when trying to update with a valid cpf', async (assert) => {
-    const { client } = await clientBuilder(1);
+    const { client } = await factoryBuilder(1);
     const clientPayload = { ...BASE_PAYLOAD };
 
     const { body } = await supertest(BASE_URL)
@@ -258,7 +258,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 422 when provided an invalid name', async (assert) => {
-    const { client } = await clientBuilder(1);
+    const { client } = await factoryBuilder(1);
     const clientPayload = {
       name: 'A',
     };
@@ -273,7 +273,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 422 when provided an invalid sex', async (assert) => {
-    const { client } = await clientBuilder(1);
+    const { client } = await factoryBuilder(1);
     const clientPayload = {
       sex: 'abc',
     };
@@ -288,7 +288,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 422 when provided an invalid birthdate', async (assert) => {
-    const { client } = await clientBuilder(1);
+    const { client } = await factoryBuilder(1);
     const clientPayload = {
       birthdate: '09-01-1995',
     };
@@ -305,7 +305,7 @@ test.group('Clients', async (group) => {
     );
   });
   test('it should return 422 when provided an invalid state', async (assert) => {
-    const { client } = await clientBuilder(1);
+    const { client } = await factoryBuilder(1);
     const clientPayload = {
       state: 'ABC1',
     };
@@ -319,7 +319,7 @@ test.group('Clients', async (group) => {
     assert.notEqual(client?.addresses[0].state, clientPayload.state);
   });
   test('it should return 422 when provided an invalid zipcode', async (assert) => {
-    const { client } = await clientBuilder(1);
+    const { client } = await factoryBuilder(1);
     const clientPayload = {
       zipCode: '123',
     };
@@ -333,7 +333,7 @@ test.group('Clients', async (group) => {
     assert.notEqual(client?.addresses[0].zipCode, clientPayload.zipCode);
   });
   test('it should return 422 when provided an invalid phone number', async (assert) => {
-    const { client } = await clientBuilder(1);
+    const { client } = await factoryBuilder(1);
     const clientPayload = {
       phoneNumber: '123',
     };
@@ -349,7 +349,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should delete a client and return 200', async (assert) => {
-    const { client } = await clientBuilder(1);
+    const { client } = await factoryBuilder(1);
 
     const { body } = await supertest(BASE_URL)
       .delete(`/clients/${client?.id}`)
