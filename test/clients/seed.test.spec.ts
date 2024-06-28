@@ -1,4 +1,4 @@
-// import { clientBuilder } from 'Database/factories';
+// import { factoryBuilder } from 'Database/factories';
 // import test from 'japa';
 // import {
 //   products,
@@ -14,7 +14,7 @@
 
 // test.group('test', async () => {
 //   test('test', async () => {
-//     await clientBuilder(10);
+//     await factoryBuilder(10);
 
 //     await Promise.all(
 //       productsBrands.map(async (productBrand) => {
@@ -48,9 +48,5 @@
 //     const productTest = await Product.find(1);
 //     await productTest?.load('category');
 //     await productTest?.load('brand');
-//     console.log('ok');
-//     console.log(productTest?.name);
-//     console.log(productTest?.brand.brandName);
-//     console.log(productTest?.category.categoryName);
 //   });
 // });

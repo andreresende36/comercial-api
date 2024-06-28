@@ -32,13 +32,6 @@ Route.put('/users/:id', 'UsersController.update');
 Route.post('/forgot-password', 'PasswordsController.forgotPassword');
 Route.post('/reset-password', 'PasswordsController.resetPassword');
 
-// Clients
-Route.get('/clients', 'ClientsController.index');
-Route.post('/clients', 'ClientsController.store');
-Route.get('/clients/:id', 'ClientsController.show');
-Route.put('/clients/:id', 'ClientsController.update');
-Route.delete('/clients/:id', 'ClientsController.delete');
-
 // Addresses
 Route.get('/clients/:id/addresses', 'AddressesController.index');
 Route.post('/clients/:id/addresses', 'AddressesController.store');
@@ -52,13 +45,12 @@ Route.post('/clients/:id/phones', 'PhonesController.store');
 Route.get('/clients/phones/:id', 'PhonesController.show');
 Route.put('/clients/phones/:id', 'PhonesController.update');
 Route.delete('/clients/phones/:id', 'PhonesController.delete');
-
-// Products
-Route.get('/products', 'ProductsController.index');
-Route.post('/products', 'ProductsController.store');
-Route.get('/products/:id', 'ProductsController.show');
-Route.put('/products/:id', 'ProductsController.update');
-Route.delete('/products/:id', 'ProductsController.delete');
+// Clients
+Route.get('/clients', 'ClientsController.index');
+Route.post('/clients', 'ClientsController.store');
+Route.get('/clients/:id', 'ClientsController.show');
+Route.put('/clients/:id', 'ClientsController.update');
+Route.delete('/clients/:id', 'ClientsController.delete');
 
 // Products categories
 Route.get('/products/categories', 'ProductCategoriesController.index');
@@ -73,6 +65,13 @@ Route.post('/products/brands', 'ProductBrandsController.store');
 Route.get('/products/brands/:id', 'ProductBrandsController.show');
 Route.put('/products/brands/:id', 'ProductBrandsController.update');
 Route.delete('/products/brands/:id', 'ProductBrandsController.delete');
+
+// Products
+Route.get('/products', 'ProductsController.index');
+Route.post('/products', 'ProductsController.store');
+Route.get('/products/:id', 'ProductsController.show');
+Route.put('/products/:id', 'ProductsController.update');
+Route.delete('/products/:id', 'ProductsController.delete');
 
 //Purchases
 Route.get('/purchases', 'PurchasesController.index');

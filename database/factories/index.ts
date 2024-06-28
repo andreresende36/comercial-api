@@ -1,4 +1,3 @@
-import timeFormatter from 'utils/timeFormatter';
 import Purchase from 'App/Models/Purchase';
 import Factory from '@ioc:Adonis/Lucid/Factory';
 import Client from 'App/Models/Client';

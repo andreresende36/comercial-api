@@ -3,7 +3,6 @@ import { PurchaseFactory, factoryBuilder } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
 import Client from 'App/Models/Client';
-import { DateTime } from 'luxon';
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 const BASE_PAYLOAD = {
@@ -349,7 +348,7 @@ test.group('Clients', async (group) => {
     assert.notEqual(client?.phones[0].phoneNumber, clientPayload.phoneNumber);
   });
 
-  test.only('it should show a single client and return 200, with his purchases ordered by date, first dates first', async (assert) => {
+  test('it should show a single client and return 200, with his purchases ordered by date, first dates first', async (assert) => {
     const { client } = await factoryBuilder(1);
     for (let index = 0; index < 5; index++) {
       await PurchaseFactory.create();
