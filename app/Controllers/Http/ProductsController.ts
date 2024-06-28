@@ -8,7 +8,7 @@ export default class ProductsController {
   public async store({ request, response }: HttpContextContract) {
     const productPayload = await request.validate(CreateProduct);
     const product = await Product.create(productPayload);
-    return response.ok({ product });
+    return response.created({ product });
   }
 
   public async update({ request, response }: HttpContextContract) {
@@ -33,14 +33,13 @@ export default class ProductsController {
 
   public async show({ request, response }: HttpContextContract) {
     const id = request.param('id');
-    const product = await Product.query()
+    const [product] = await Product.query()
       .where('id', id)
       .preload('brand')
       .preload('category')
       .apply((scopes) => scopes.ignoreDeleted());
 
-    if (product.length === 0)
-      throw new BadRequest('product not found', 404, 'NOT_FOUND');
+    if (!product) throw new BadRequest('product not found', 404, 'NOT_FOUND');
     return response.ok({ product });
   }
 
