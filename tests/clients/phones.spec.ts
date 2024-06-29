@@ -1,6 +1,6 @@
 import Database from '@ioc:Adonis/Lucid/Database';
 import Phone from 'App/Models/Phone';
-import { PhoneFactory, factoryBuilder } from 'Database/factories';
+import { PhoneFactory, ClientFactory } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
 
@@ -11,14 +11,14 @@ const BASE_PAYLOAD = {
 
 test.group('Phones', (group) => {
   test('it should create an phone number', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
     const { body } = await supertest(BASE_URL)
       .post(`/clients/${client?.id}/phones`)
       .send(BASE_PAYLOAD)
       .expect(201);
     await client?.load('phones');
-    assert.exists(client?.phones[1]);
-    assert.exists(client?.phones[1].id);
+    assert.exists(client?.phones[0]);
+    assert.exists(client?.phones[0].id);
     assert.deepEqual(
       Object.values(body.phone).slice(0, -2),
       Object.values(BASE_PAYLOAD),
@@ -26,7 +26,7 @@ test.group('Phones', (group) => {
   });
 
   test('it should return 422 when required data is not provided', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
     const { body } = await supertest(BASE_URL)
       .post(`/clients/${client?.id}/phones`)
       .send({})
@@ -36,7 +36,7 @@ test.group('Phones', (group) => {
   });
 
   test('it should return 422 when providing an invalid phone number', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
     const { body } = await supertest(BASE_URL)
       .post(`/clients/${client?.id}/phones`)
       .send({ phoneNumber: '123' })
@@ -46,9 +46,11 @@ test.group('Phones', (group) => {
   });
 
   test('it should show all registered phone numbers, ordered by id', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
     for (let index = 0; index < 5; index++) {
-      await PhoneFactory.create();
+      const phone = await PhoneFactory.make();
+      await phone.related('client').associate(client);
+      await phone.save();
     }
     const { body } = await supertest(BASE_URL)
       .get(`/clients/${client?.id}/phones`)
@@ -56,13 +58,15 @@ test.group('Phones', (group) => {
     await client?.load('phones');
 
     assert.equal(body.phones.length, client?.phones.length);
-    assert.equal(body.phones.length, 6);
+    assert.equal(body.phones.length, 5);
   });
 
   test('it should update an phone number', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
+    const phone = await PhoneFactory.make();
+    await phone.related('client').associate(client);
+    await phone.save();
     await client?.load('phones');
-
     const { body } = await supertest(BASE_URL)
       .put(`/clients/phones/${client?.phones[0].id}`)
       .send(BASE_PAYLOAD)
@@ -74,7 +78,10 @@ test.group('Phones', (group) => {
   });
 
   test('it should return 422 when required data is not provided', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
+    const phone = await PhoneFactory.make();
+    await phone.related('client').associate(client);
+    await phone.save();
     await client?.load('phones');
 
     const { body } = await supertest(BASE_URL)
@@ -86,7 +93,10 @@ test.group('Phones', (group) => {
   });
 
   test('it should return 422 when provided an invalid phone number', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
+    const phone = await PhoneFactory.make();
+    await phone.related('client').associate(client);
+    await phone.save();
     await client?.load('phones');
 
     const { body } = await supertest(BASE_URL)
@@ -97,7 +107,10 @@ test.group('Phones', (group) => {
   });
 
   test('it should delete an phone and return 200', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
+    const phone = await PhoneFactory.make();
+    await phone.related('client').associate(client);
+    await phone.save();
     await client?.load('phones');
 
     const { body } = await supertest(BASE_URL)
@@ -111,7 +124,10 @@ test.group('Phones', (group) => {
   });
 
   test('it should show an phone number with all the attributes', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
+    const phone = await PhoneFactory.make();
+    await phone.related('client').associate(client);
+    await phone.save();
     await client?.load('phones');
     const { body } = await supertest(BASE_URL)
       .get(`/clients/phones/${client?.phones[0].id}`)

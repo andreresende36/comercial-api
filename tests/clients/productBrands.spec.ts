@@ -1,6 +1,6 @@
 import Database from '@ioc:Adonis/Lucid/Database';
 import ProductBrand from 'App/Models/ProductBrand';
-import { factoryBuilder } from 'Database/factories';
+import { ProductBrandFactory } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
 
@@ -30,7 +30,7 @@ test.group('Product brands', (group) => {
   });
 
   test('it should show all registered brands, ordered by id', async (assert) => {
-    const { brands } = await factoryBuilder(5);
+    const brands = await ProductBrandFactory.createMany(5);
     const { body } = await supertest(BASE_URL)
       .get('/products/brands')
       .expect(200);
@@ -43,7 +43,7 @@ test.group('Product brands', (group) => {
   });
 
   test('it should update a product brand', async (assert) => {
-    const { brand } = await factoryBuilder(1);
+    const brand = await ProductBrandFactory.create();
 
     const { body } = await supertest(BASE_URL)
       .put(`/products/brands/${brand?.id}`)
@@ -53,7 +53,7 @@ test.group('Product brands', (group) => {
     assert.notEqual(brand?.brandName, BASE_PAYLOAD.brandName);
   });
   test('it should return 422 when required data is not provided', async (assert) => {
-    const { brand } = await factoryBuilder(1);
+    const brand = await ProductBrandFactory.create();
     const { body } = await supertest(BASE_URL)
       .put(`/products/brands/${brand?.id}`)
       .send({})
@@ -63,7 +63,7 @@ test.group('Product brands', (group) => {
   });
 
   test('it should delete a product brand and return 200', async (assert) => {
-    const { brand } = await factoryBuilder(1);
+    const brand = await ProductBrandFactory.create();
     const { body } = await supertest(BASE_URL)
       .delete(`/products/brands/${brand?.id}`)
       .expect(200);
@@ -73,7 +73,7 @@ test.group('Product brands', (group) => {
   });
 
   test('it should show a product brand', async (assert) => {
-    const { brand } = await factoryBuilder(1);
+    const brand = await ProductBrandFactory.create();
     const { body } = await supertest(BASE_URL)
       .get(`/products/brands/${brand?.id}`)
       .expect(200);

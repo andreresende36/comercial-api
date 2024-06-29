@@ -1,6 +1,6 @@
 import Database from '@ioc:Adonis/Lucid/Database';
 import ProductCategory from 'App/Models/ProductCategory';
-import { factoryBuilder } from 'Database/factories';
+import { ProductCategoryFactory } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
 
@@ -30,7 +30,7 @@ test.group('Product categories', (group) => {
   });
 
   test('it should show all registered categories, ordered by id', async (assert) => {
-    const { categories } = await factoryBuilder(5);
+    const categories = await ProductCategoryFactory.createMany(5);
     const { body } = await supertest(BASE_URL)
       .get('/products/categories')
       .expect(200);
@@ -43,7 +43,7 @@ test.group('Product categories', (group) => {
   });
 
   test('it should update a product category', async (assert) => {
-    const { category } = await factoryBuilder(1);
+    const category = await ProductCategoryFactory.create();
 
     const { body } = await supertest(BASE_URL)
       .put(`/products/categories/${category?.id}`)
@@ -53,7 +53,7 @@ test.group('Product categories', (group) => {
     assert.notEqual(category?.categoryName, BASE_PAYLOAD.categoryName);
   });
   test('it should return 422 when required data is not provided', async (assert) => {
-    const { category } = await factoryBuilder(1);
+    const category = await ProductCategoryFactory.create();
     const { body } = await supertest(BASE_URL)
       .put(`/products/categories/${category?.id}`)
       .send({})
@@ -63,7 +63,7 @@ test.group('Product categories', (group) => {
   });
 
   test('it should delete a product category and return 200', async (assert) => {
-    const { category } = await factoryBuilder(1);
+    const category = await ProductCategoryFactory.create();
     const { body } = await supertest(BASE_URL)
       .delete(`/products/categories/${category?.id}`)
       .expect(200);
@@ -73,7 +73,7 @@ test.group('Product categories', (group) => {
   });
 
   test('it should show a product category', async (assert) => {
-    const { category } = await factoryBuilder(1);
+    const category = await ProductCategoryFactory.create();
     const { body } = await supertest(BASE_URL)
       .get(`/products/categories/${category?.id}`)
       .expect(200);

@@ -1,10 +1,16 @@
 import Database from '@ioc:Adonis/Lucid/Database';
-import { PurchaseFactory, factoryBuilder } from 'Database/factories';
+import {
+  PurchaseFactory,
+  ClientFactory,
+  AddressFactory,
+  ProductFactory,
+  PhoneFactory,
+  ProductCategoryFactory,
+  ProductBrandFactory,
+} from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
 import Client from 'App/Models/Client';
-import Address from 'App/Models/Address';
-
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 const BASE_PAYLOAD = {
   name: 'André Resende',
@@ -20,11 +26,6 @@ const BASE_PAYLOAD = {
   state: 'GO',
   country: 'Brasil',
   phoneNumber: '5562999999999',
-};
-
-type FactoryBuilderReturnType = {
-  clients?: Client[];
-  addresses?: Address[];
 };
 
 test.group('Clients', async (group) => {
@@ -52,7 +53,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 409 when provide the same CPF twice', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
 
     const clientPayload = { ...BASE_PAYLOAD };
     clientPayload.cpf = client?.cpf!;
@@ -154,17 +155,21 @@ test.group('Clients', async (group) => {
 
   test('it should show all registered clients, ordered by id and only main data', async (assert) => {
     const numberOfClients = 10;
-    const { clients, addresses }: FactoryBuilderReturnType =
-      await factoryBuilder(numberOfClients);
+    const clients = await ClientFactory.createMany(numberOfClients);
+    const addresses = await Promise.all(
+      clients.map(async (client) => {
+        const address = await AddressFactory.make();
+        await address.related('client').associate(client);
+        await address.save();
+        return address;
+      }),
+    );
     const { body } = await supertest(BASE_URL).get('/clients').expect(200);
-
     if (!clients || !addresses) {
       assert.fail('Clients or addresses are undefined');
       return;
     }
-
     assert.equal(body.clients.length, clients.length);
-
     clients.forEach((client, i) => {
       assert.equal(body.clients[i].id, client.id);
       assert.equal(body.clients[i].name, client.name);
@@ -186,7 +191,7 @@ test.group('Clients', async (group) => {
 
   // Apenas o CPF não pode ser alterado
   test('it should update an client', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
     const {
       name,
       sex,
@@ -239,7 +244,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 422 when required data is not provided', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
 
     const { body } = await supertest(BASE_URL)
       .put(`/clients/${client?.id}`)
@@ -252,7 +257,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 403 when trying to update with a valid cpf', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
     const clientPayload = { ...BASE_PAYLOAD };
 
     const { body } = await supertest(BASE_URL)
@@ -269,7 +274,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 422 when provided an invalid name', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
     const clientPayload = {
       name: 'A',
     };
@@ -284,7 +289,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 422 when provided an invalid sex', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
     const clientPayload = {
       sex: 'abc',
     };
@@ -299,7 +304,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should return 422 when provided an invalid birthdate', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
     const clientPayload = {
       birthdate: '09-01-1995',
     };
@@ -316,7 +321,9 @@ test.group('Clients', async (group) => {
     );
   });
   test('it should return 422 when provided an invalid state', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
+    const address = await AddressFactory.make();
+    await address.related('client').associate(client);
     const clientPayload = {
       state: 'ABC1',
     };
@@ -330,7 +337,9 @@ test.group('Clients', async (group) => {
     assert.notEqual(client?.addresses[0].state, clientPayload.state);
   });
   test('it should return 422 when provided an invalid zipcode', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
+    const address = await AddressFactory.make();
+    await address.related('client').associate(client);
     const clientPayload = {
       zipCode: '123',
     };
@@ -344,7 +353,9 @@ test.group('Clients', async (group) => {
     assert.notEqual(client?.addresses[0].zipCode, clientPayload.zipCode);
   });
   test('it should return 422 when provided an invalid phone number', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
+    const phone = await PhoneFactory.make();
+    await phone.related('client').associate(client);
     const clientPayload = {
       phoneNumber: '123',
     };
@@ -360,9 +371,18 @@ test.group('Clients', async (group) => {
   });
 
   test('it should show a single client and return 200, with his purchases ordered by date, first dates first', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
+    const category = await ProductCategoryFactory.create();
+    const brand = await ProductBrandFactory.create();
+    const product = await ProductFactory.make();
+    await product.related('category').associate(category);
+    await product.related('brand').associate(brand);
+    await product.save();
     for (let index = 0; index < 5; index++) {
-      await PurchaseFactory.create();
+      const purchase = await PurchaseFactory.make();
+      await purchase.related('client').associate(client);
+      await purchase.related('product').associate(product);
+      await purchase.save();
     }
     await client?.load('purchases');
 
@@ -376,7 +396,7 @@ test.group('Clients', async (group) => {
       return dateB - dateA;
     });
 
-    assert.equal(body.client.purchases.length, 6);
+    assert.equal(body.client.purchases.length, 5);
     sortedPurchases?.forEach((purchase, i) => {
       delete body.client.purchases[i].product;
       assert.deepEqual(purchase.serialize(), body.client.purchases[i]);
@@ -384,7 +404,7 @@ test.group('Clients', async (group) => {
   });
 
   test('it should delete a client and return 200', async (assert) => {
-    const { client } = await factoryBuilder(1);
+    const client = await ClientFactory.create();
 
     const { body } = await supertest(BASE_URL)
       .delete(`/clients/${client?.id}`)

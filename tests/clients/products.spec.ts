@@ -2,7 +2,13 @@ import test from 'japa';
 import Product from 'App/Models/Product';
 import supertest from 'supertest';
 import Database from '@ioc:Adonis/Lucid/Database';
-import { factoryBuilder } from 'Database/factories';
+import {
+  ProductBrandFactory,
+  ProductCategoryFactory,
+  ProductFactory,
+} from 'Database/factories';
+import ProductBrand from 'App/Models/ProductBrand';
+import ProductCategory from 'App/Models/ProductCategory';
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 const BASE_PAYLOAD = {
@@ -16,7 +22,8 @@ const BASE_PAYLOAD = {
 
 test.group('Products', (group) => {
   test('it should create a product', async (assert) => {
-    await factoryBuilder(1);
+    await ProductBrandFactory.create();
+    await ProductCategoryFactory.create();
     const { body } = await supertest(BASE_URL)
       .post('/products')
       .send(BASE_PAYLOAD)
@@ -36,8 +43,9 @@ test.group('Products', (group) => {
   });
 
   test('it should show all registered products, ordered by name', async (assert) => {
-    const numberOfProducts = 10;
-    const { products } = await factoryBuilder(numberOfProducts);
+    await ProductBrandFactory.create();
+    await ProductCategoryFactory.create();
+    const products = await ProductFactory.createMany(10);
     products;
     const sortedProducts = products?.sort((a, b) => {
       if (a.name < b.name) {
@@ -59,7 +67,9 @@ test.group('Products', (group) => {
   });
 
   test('it should show a single product', async (assert) => {
-    const { product } = await factoryBuilder(1);
+    await ProductBrandFactory.create();
+    await ProductCategoryFactory.create();
+    const product = await ProductFactory.create();
     const { body } = await supertest(BASE_URL)
       .get(`/products/${product?.id}`)
       .expect(200);
@@ -71,7 +81,9 @@ test.group('Products', (group) => {
   });
 
   test('it should update a product', async (assert) => {
-    const { product } = await factoryBuilder(1);
+    await ProductBrandFactory.create();
+    await ProductCategoryFactory.create();
+    const product = await ProductFactory.create();
     const { body } = await supertest(BASE_URL)
       .put(`/products/${product!.id}`)
       .send(BASE_PAYLOAD)
@@ -82,7 +94,9 @@ test.group('Products', (group) => {
   });
 
   test('it should return 422 when required data is not provided for update', async (assert) => {
-    const { product } = await factoryBuilder(1);
+    await ProductBrandFactory.create();
+    await ProductCategoryFactory.create();
+    const product = await ProductFactory.create();
     const { body } = await supertest(BASE_URL)
       .put(`/products/${product?.id}`)
       .send({})
@@ -94,7 +108,9 @@ test.group('Products', (group) => {
   });
 
   test('it should delete a product and return 200', async (assert) => {
-    const { product } = await factoryBuilder(1);
+    await ProductBrandFactory.create();
+    await ProductCategoryFactory.create();
+    const product = await ProductFactory.create();
     const { body } = await supertest(BASE_URL)
       .delete(`/products/${product?.id}`)
       .expect(200);
@@ -105,9 +121,15 @@ test.group('Products', (group) => {
 
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction();
+    await Product.truncate(true);
+    await ProductBrand.truncate(true);
+    await ProductCategory.truncate(true);
   });
 
   group.afterEach(async () => {
     await Database.rollbackGlobalTransaction();
+    await Product.truncate(true);
+    await ProductBrand.truncate(true);
+    await ProductCategory.truncate(true);
   });
 });

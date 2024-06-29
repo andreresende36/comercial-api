@@ -91,66 +91,57 @@ export const PurchaseFactory = Factory.define(Purchase, () => {
   };
 }).build();
 
-export const factoryBuilder = async (qty: number) => {
-  const clients = await ClientFactory.createMany(qty);
-  const brands = await ProductBrandFactory.createMany(qty);
-  const categories = await ProductCategoryFactory.createMany(qty);
+// export const factoryBuilder = async (qty: number) => {
+//   const clients = await ClientFactory.createMany(qty);
+//   const brands = await ProductBrandFactory.createMany(qty);
+//   const categories = await ProductCategoryFactory.createMany(qty);
 
-  const addresses = await Promise.all(
-    clients.map(async (client) => {
-      const address = await AddressFactory.create();
-      address.clientId = client.id;
-      await address.save();
-      return address;
-    }),
-  );
+//   const phones = await Promise.all(
+//     clients.map(async (client) => {
+//       const phone = await PhoneFactory.create();
+//       phone.clientId = client.id;
+//       await phone.save();
+//       return phone;
+//     }),
+//   );
 
-  const phones = await Promise.all(
-    clients.map(async (client) => {
-      const phone = await PhoneFactory.create();
-      phone.clientId = client.id;
-      await phone.save();
-      return phone;
-    }),
-  );
+//   const products = await Promise.all(
+//     brands.map(async (brand, i) => {
+//       const product = await ProductFactory.create();
+//       product.brandId = brand.id;
+//       product.categoryId = categories[i].id;
+//       await product.save();
+//       return product;
+//     }),
+//   );
 
-  const products = await Promise.all(
-    brands.map(async (brand, i) => {
-      const product = await ProductFactory.create();
-      product.brandId = brand.id;
-      product.categoryId = categories[i].id;
-      await product.save();
-      return product;
-    }),
-  );
+//   const purchases = await Promise.all(
+//     clients.map(async (client, i) => {
+//       const purchase = await PurchaseFactory.create();
+//       purchase.clientId = client.id;
+//       purchase.productId = products[i].id;
+//       await purchase.save();
+//       return purchase;
+//     }),
+//   );
 
-  const purchases = await Promise.all(
-    clients.map(async (client, i) => {
-      const purchase = await PurchaseFactory.create();
-      purchase.clientId = client.id;
-      purchase.productId = products[i].id;
-      await purchase.save();
-      return purchase;
-    }),
-  );
-
-  if (qty === 1)
-    return {
-      client: clients[0],
-      address: addresses[0],
-      phone: phones[0],
-      brand: brands[0],
-      category: categories[0],
-      product: products[0],
-      purchase: purchases[0],
-    };
-  return {
-    clients,
-    addresses,
-    phones,
-    brands,
-    categories,
-    products,
-    purchases,
-  };
-};
+//   if (qty === 1)
+//     return {
+//       client: clients[0],
+//       // address: addresses[0],
+//       phone: phones[0],
+//       brand: brands[0],
+//       category: categories[0],
+//       product: products[0],
+//       purchase: purchases[0],
+//     };
+//   return {
+//     clients,
+//     // addresses,
+//     phones,
+//     brands,
+//     categories,
+//     products,
+//     purchases,
+//   };
+// };

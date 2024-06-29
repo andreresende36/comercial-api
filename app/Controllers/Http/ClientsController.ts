@@ -22,15 +22,11 @@ export default class ClientsController {
       state,
       zipCode,
     } = await request.validate(CreateClient);
-
     const clientByCpf = await Client.findBy('cpf', cpf);
-
     if (clientByCpf) {
       throw new BadRequest('cpf already registered', 409, 'BAD_REQUEST');
     }
-
     const client = await Client.create({ name, cpf, sex, birthdate });
-
     const _address = await client.related('addresses').updateOrCreate(
       { clientId: client.id },
       {
@@ -47,7 +43,6 @@ export default class ClientsController {
     const phone = await client
       .related('phones')
       .updateOrCreate({ clientId: client.id }, { phoneNumber });
-
     return response.created({ client, address: _address, phone });
   }
 
@@ -107,39 +102,32 @@ export default class ClientsController {
       state,
       zipCode,
     } = await request.validate(UpdateClient);
-
     if (!Object.keys(request.all()).length) {
       throw new BadRequest('no data provided', 422, 'BAD_REQUEST');
     }
-
     if (cpf) {
       throw new UpdateCpf('cpf cannot be updated', 403, 'FORBIDDEN');
     }
-
     const id = request.param('id');
     const client = await Client.findOrFail(id);
-    await client.load('addresses');
-    await client.load('phones');
-
-    const _address = client.addresses[0];
-    const phone = client.phones[0];
-
     client.merge({ name, sex, birthdate });
-    _address.merge({
-      address,
-      city,
-      complement,
-      country,
-      neighborhood,
-      number,
-      zipCode,
-      state,
-    });
-    phone.merge({ phoneNumber });
-
+    await client.related('addresses').updateOrCreate(
+      { clientId: client.id },
+      {
+        address,
+        number,
+        complement,
+        neighborhood,
+        city,
+        country,
+        state,
+        zipCode,
+      },
+    );
+    await client
+      .related('phones')
+      .updateOrCreate({ clientId: client.id }, { phoneNumber });
     await client.save();
-    await _address.save();
-    await phone.save();
     return response.ok({ client: client });
   }
 
