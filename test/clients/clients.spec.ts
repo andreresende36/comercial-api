@@ -3,6 +3,7 @@ import { PurchaseFactory, factoryBuilder } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
 import Client from 'App/Models/Client';
+import Address from 'App/Models/Address';
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 const BASE_PAYLOAD = {
@@ -19,6 +20,11 @@ const BASE_PAYLOAD = {
   state: 'GO',
   country: 'Brasil',
   phoneNumber: '5562999999999',
+};
+
+type FactoryBuilderReturnType = {
+  clients?: Client[];
+  addresses?: Address[];
 };
 
 test.group('Clients', async (group) => {
@@ -148,13 +154,18 @@ test.group('Clients', async (group) => {
 
   test('it should show all registered clients, ordered by id and only main data', async (assert) => {
     const numberOfClients = 10;
-    const { clients, addresses } = await factoryBuilder(numberOfClients);
+    const { clients, addresses }: FactoryBuilderReturnType =
+      await factoryBuilder(numberOfClients);
     const { body } = await supertest(BASE_URL).get('/clients').expect(200);
 
-    assert.equal(body.clients.length, clients?.length);
+    if (!clients || !addresses) {
+      assert.fail('Clients or addresses are undefined');
+      return;
+    }
 
-    // id, name, cpf, cidade e estado considerados os principais
-    clients?.forEach((client, i) => {
+    assert.equal(body.clients.length, clients.length);
+
+    clients.forEach((client, i) => {
       assert.equal(body.clients[i].id, client.id);
       assert.equal(body.clients[i].name, client.name);
       assert.equal(body.clients[i].cpf, client.cpf);

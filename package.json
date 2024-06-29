@@ -35,6 +35,7 @@
     "cpf-cnpj-validator": "^1.0.3",
     "lodash": "^4.17.21",
     "luxon": "^3.4.4",
+    "mysql": "^2.18.1",
     "phc-argon2": "^1.1.4",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.2.2",
