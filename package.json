@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "build": "node ace build --production",
-    "start": "node server.js",
+    "start": "sh app.sh",
     "dev": "node ace serve --watch",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write .",
     "test": "node -r @adonisjs/assembler/build/register japaFile.ts",
-    "migration-and-seed": "node ace migration:run && node ace db:seed"
+    "run": "sh app.sh"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.9.6",
