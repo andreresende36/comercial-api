@@ -5,8 +5,8 @@
  * file.
  */
 
-import Env from '@ioc:Adonis/Core/Env'
-import { DatabaseConfig } from '@ioc:Adonis/Lucid/Database'
+import Env from '@ioc:Adonis/Core/Env';
+import { DatabaseConfig } from '@ioc:Adonis/Lucid/Database';
 
 const databaseConfig: DatabaseConfig = {
   /*
@@ -34,7 +34,7 @@ const databaseConfig: DatabaseConfig = {
     |
     */
     mysql: {
-      client: 'mysql',
+      client: 'mysql2',
       connection: {
         host: Env.get('MYSQL_HOST'),
         port: Env.get('MYSQL_PORT'),
@@ -48,8 +48,7 @@ const databaseConfig: DatabaseConfig = {
       healthCheck: false,
       debug: false,
     },
+  },
+};
 
-  }
-}
-
-export default databaseConfig
+export default databaseConfig;

@@ -90,7 +90,10 @@ test.group('Products', (group) => {
       .expect(200);
 
     await product?.refresh();
-    assert.deepEqual(product?.serialize(), body.product);
+    assert.deepEqual(
+      { ...product?.serialize(), price: Number(product.serialize().price) },
+      body.product,
+    );
   });
 
   test('it should return 422 when required data is not provided for update', async (assert) => {
