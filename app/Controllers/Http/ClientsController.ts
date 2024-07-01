@@ -67,16 +67,14 @@ export default class ClientsController {
       .preload('purchases', (query) => {
         query.preload('product');
         if (month && year) {
-          query.whereRaw(
-            'strftime("%m", date) = ? AND strftime("%Y", date) = ?',
-            [String(month).padStart(2, '0'), year],
-          );
-        } else if (month) {
-          query.whereRaw('strftime("%m", date) = ?', [
+          query.whereRaw('MONTH(date) = ? AND YEAR(date) = ?', [
             String(month).padStart(2, '0'),
+            year,
           ]);
+        } else if (month) {
+          query.whereRaw('MONTH(date) = ?', [String(month).padStart(2, '0')]);
         } else if (year) {
-          query.whereRaw('strftime("%Y", date) = ?', [year]);
+          query.whereRaw('YEAR(date) = ?', [year]);
         }
         query.orderBy('date', 'desc');
       })
