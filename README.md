@@ -119,7 +119,7 @@ Disponibilizo abaixo o formato do corpo da requisição para cada uma das Models
 1. Clone o repositório:
 
    ```sh
-   git clone https://github.com/andreresende36/ecommerce-api
+   git clone https://github.com/andreresende36/ecommerce-api.git
 
 2. Entre no diretório do projeto:
 
