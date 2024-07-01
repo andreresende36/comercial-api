@@ -180,10 +180,5 @@ test.group('Purchases', (group) => {
   });
   group.afterEach(async () => {
     await Database.rollbackGlobalTransaction();
-    await Client.truncate(true);
-    await ProductBrand.truncate(true);
-    await ProductCategory.truncate(true);
-    await Product.truncate(true);
-    await Purchase.truncate(true);
   });
 });

@@ -161,8 +161,5 @@ test.group('Products', (group) => {
 
   group.afterEach(async () => {
     await Database.rollbackGlobalTransaction();
-    await Product.truncate(true);
-    await ProductBrand.truncate(true);
-    await ProductCategory.truncate(true);
   });
 });
