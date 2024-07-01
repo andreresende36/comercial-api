@@ -37,6 +37,16 @@ export default class ExceptionHandler extends HttpExceptionHandler {
         message: 'resource not found',
         status: error.status,
       });
+    } else if (
+      ['E_INVALID_AUTH_UID', 'E_INVALID_AUTH_PASSWORD'].includes(
+        error.code || '',
+      )
+    ) {
+      return context.response.send({
+        code: 'BAD_REQUEST',
+        message: 'invalid credentials',
+        status: 400,
+      });
     }
     return super.handle(error, context);
   }

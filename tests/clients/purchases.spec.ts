@@ -8,12 +8,14 @@ import {
   ProductCategoryFactory,
   ProductFactory,
   PurchaseFactory,
+  UserFactory,
 } from 'Database/factories';
 import dataTimeFormatter from '../../utils/timeFormatter';
 import Client from 'App/Models/Client';
 import ProductCategory from 'App/Models/ProductCategory';
 import Product from 'App/Models/Product';
 import ProductBrand from 'App/Models/ProductBrand';
+import User from 'App/Models/User';
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 const BASE_PAYLOAD = {
@@ -25,7 +27,7 @@ const BASE_PAYLOAD = {
   clientId: 1,
   productId: 1,
 };
-
+let token = '';
 test.group('Purchases', (group) => {
   test('it should create a purchase', async (assert) => {
     await ClientFactory.create();
@@ -34,6 +36,7 @@ test.group('Purchases', (group) => {
     await ProductFactory.create();
     const { body } = await supertest(BASE_URL)
       .post('/purchases')
+      .set('Authorization', `Bearer ${token}`)
       .send(BASE_PAYLOAD)
       .expect(201);
     const dateTime = dataTimeFormatter(BASE_PAYLOAD.time);
@@ -46,6 +49,7 @@ test.group('Purchases', (group) => {
   test('it should return 422 when required data is not provided', async (assert) => {
     const { body } = await supertest(BASE_URL)
       .post('/purchases')
+      .set('Authorization', `Bearer ${token}`)
       .send({})
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -59,7 +63,10 @@ test.group('Purchases', (group) => {
     await ProductFactory.create();
 
     const purchases = await PurchaseFactory.createMany(10);
-    const { body } = await supertest(BASE_URL).get('/purchases').expect(200);
+    const { body } = await supertest(BASE_URL)
+      .get('/purchases')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
     purchases?.forEach((purchase, i) => {
       const { id, total_price, date, client_id, product_id } =
         body.purchases[i];
@@ -86,6 +93,7 @@ test.group('Purchases', (group) => {
     const purchase = await PurchaseFactory.create();
     const { body } = await supertest(BASE_URL)
       .get(`/purchases/${purchase?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
     assert.equal(body.purchase[0].id, purchase!.id);
     assert.equal(body.purchase[0].quantity, purchase!.quantity);
@@ -107,6 +115,7 @@ test.group('Purchases', (group) => {
     const purchase = await PurchaseFactory.create();
     const { body } = await supertest(BASE_URL)
       .put(`/purchases/${purchase!.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(BASE_PAYLOAD)
       .expect(200);
     await purchase?.refresh();
@@ -121,6 +130,7 @@ test.group('Purchases', (group) => {
     const purchase = await PurchaseFactory.create();
     const { body } = await supertest(BASE_URL)
       .put(`/purchases/${purchase?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({})
       .expect(422);
 
@@ -137,10 +147,27 @@ test.group('Purchases', (group) => {
     const purchase = await PurchaseFactory.create();
     const { body } = await supertest(BASE_URL)
       .delete(`/purchases/${purchase?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
     const searchDeletedPurchase = await Purchase.findBy('id', purchase?.id);
     assert.equal(body.message, 'Purchase deleted successfully');
     assert.exists(searchDeletedPurchase?.deletedAt);
+  });
+  group.before(async () => {
+    const plainPassword = 'test';
+    const _user = await UserFactory.merge({
+      password: plainPassword,
+    }).create();
+    const { body } = await supertest(BASE_URL)
+      .post('/login')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ email: _user.email, password: plainPassword })
+      .expect(201);
+    token = body.token.token;
+  });
+
+  group.after(async () => {
+    await User.truncate(true);
   });
 
   group.beforeEach(async () => {

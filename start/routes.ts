@@ -26,56 +26,99 @@ Route.get('/', async () => {
 
 // Users
 Route.post('/signup', 'UsersController.store');
-Route.put('/users/:id', 'UsersController.update');
+Route.put('/users/:id', 'UsersController.update').middleware('updateUser');
 
 // Password
 Route.post('/forgot-password', 'PasswordsController.forgotPassword');
 Route.post('/reset-password', 'PasswordsController.resetPassword');
 
+// Athentication
+Route.post('/login', 'SessionsController.store');
+Route.delete('/login', 'SessionsController.delete').middleware('jwt');
+Route.post('/refresh', 'SessionsController.refresh');
+
 // Addresses
-Route.get('/clients/:id/addresses', 'AddressesController.index');
-Route.post('/clients/:id/addresses', 'AddressesController.store');
-Route.get('/clients/addresses/:id', 'AddressesController.show');
-Route.put('/clients/addresses/:id', 'AddressesController.update');
-Route.delete('/clients/addresses/:id', 'AddressesController.delete');
+Route.get('/clients/:id/addresses', 'AddressesController.index').middleware(
+  'jwt',
+);
+Route.post('/clients/:id/addresses', 'AddressesController.store').middleware(
+  'jwt',
+);
+Route.get('/clients/addresses/:id', 'AddressesController.show').middleware(
+  'jwt',
+);
+Route.put('/clients/addresses/:id', 'AddressesController.update').middleware(
+  'jwt',
+);
+Route.delete('/clients/addresses/:id', 'AddressesController.delete').middleware(
+  'jwt',
+);
 
 // Phones
-Route.get('/clients/:id/phones', 'PhonesController.index');
-Route.post('/clients/:id/phones', 'PhonesController.store');
-Route.get('/clients/phones/:id', 'PhonesController.show');
-Route.put('/clients/phones/:id', 'PhonesController.update');
-Route.delete('/clients/phones/:id', 'PhonesController.delete');
+Route.get('/clients/:id/phones', 'PhonesController.index').middleware('jwt');
+Route.post('/clients/:id/phones', 'PhonesController.store').middleware('jwt');
+Route.get('/clients/phones/:id', 'PhonesController.show').middleware('jwt');
+Route.put('/clients/phones/:id', 'PhonesController.update').middleware('jwt');
+Route.delete('/clients/phones/:id', 'PhonesController.delete').middleware(
+  'jwt',
+);
 // Clients
-Route.get('/clients', 'ClientsController.index');
-Route.post('/clients', 'ClientsController.store');
-Route.get('/clients/:id', 'ClientsController.show');
-Route.put('/clients/:id', 'ClientsController.update');
-Route.delete('/clients/:id', 'ClientsController.delete');
+Route.get('/clients', 'ClientsController.index').middleware('jwt');
+Route.post('/clients', 'ClientsController.store').middleware('jwt');
+Route.get('/clients/:id', 'ClientsController.show').middleware('jwt');
+Route.put('/clients/:id', 'ClientsController.update').middleware('jwt');
+Route.delete('/clients/:id', 'ClientsController.delete').middleware('jwt');
 
 // Products categories
-Route.get('/products/categories', 'ProductCategoriesController.index');
-Route.post('/products/categories', 'ProductCategoriesController.store');
-Route.get('/products/categories/:id', 'ProductCategoriesController.show');
-Route.put('/products/categories/:id', 'ProductCategoriesController.update');
-Route.delete('/products/categories/:id', 'ProductCategoriesController.delete');
+Route.get(
+  '/products/categories',
+  'ProductCategoriesController.index',
+).middleware('jwt');
+Route.post(
+  '/products/categories',
+  'ProductCategoriesController.store',
+).middleware('jwt');
+Route.get(
+  '/products/categories/:id',
+  'ProductCategoriesController.show',
+).middleware('jwt');
+Route.put(
+  '/products/categories/:id',
+  'ProductCategoriesController.update',
+).middleware('jwt');
+Route.delete(
+  '/products/categories/:id',
+  'ProductCategoriesController.delete',
+).middleware('jwt');
 
 // Products brands
-Route.get('/products/brands', 'ProductBrandsController.index');
-Route.post('/products/brands', 'ProductBrandsController.store');
-Route.get('/products/brands/:id', 'ProductBrandsController.show');
-Route.put('/products/brands/:id', 'ProductBrandsController.update');
-Route.delete('/products/brands/:id', 'ProductBrandsController.delete');
+Route.get('/products/brands', 'ProductBrandsController.index').middleware(
+  'jwt',
+);
+Route.post('/products/brands', 'ProductBrandsController.store').middleware(
+  'jwt',
+);
+Route.get('/products/brands/:id', 'ProductBrandsController.show').middleware(
+  'jwt',
+);
+Route.put('/products/brands/:id', 'ProductBrandsController.update').middleware(
+  'jwt',
+);
+Route.delete(
+  '/products/brands/:id',
+  'ProductBrandsController.delete',
+).middleware('jwt');
 
 // Products
-Route.get('/products', 'ProductsController.index');
-Route.post('/products', 'ProductsController.store');
-Route.get('/products/:id', 'ProductsController.show');
-Route.put('/products/:id', 'ProductsController.update');
-Route.delete('/products/:id', 'ProductsController.delete');
+Route.get('/products', 'ProductsController.index').middleware('jwt');
+Route.post('/products', 'ProductsController.store').middleware('jwt');
+Route.get('/products/:id', 'ProductsController.show').middleware('jwt');
+Route.put('/products/:id', 'ProductsController.update').middleware('jwt');
+Route.delete('/products/:id', 'ProductsController.delete').middleware('jwt');
 
 //Purchases
-Route.get('/purchases', 'PurchasesController.index');
-Route.post('/purchases', 'PurchasesController.store');
-Route.get('/purchases/:id', 'PurchasesController.show');
-Route.put('/purchases/:id', 'PurchasesController.update');
-Route.delete('/purchases/:id', 'PurchasesController.delete');
+Route.get('/purchases', 'PurchasesController.index').middleware('jwt');
+Route.post('/purchases', 'PurchasesController.store').middleware('jwt');
+Route.get('/purchases/:id', 'PurchasesController.show').middleware('jwt');
+Route.put('/purchases/:id', 'PurchasesController.update').middleware('jwt');
+Route.delete('/purchases/:id', 'PurchasesController.delete').middleware('jwt');

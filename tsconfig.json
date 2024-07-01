@@ -30,7 +30,10 @@
       "@adonisjs/repl",
       "@adonisjs/lucid",
       "@adonisjs/mail",
-      "@adonisjs/view"
+      "@adonisjs/view",
+      "@adonisjs/auth",
+      "adonis5-jwt",
+      "@adonisjs/bouncer"
     ]
   }
 }

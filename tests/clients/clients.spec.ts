@@ -7,10 +7,12 @@ import {
   PhoneFactory,
   ProductCategoryFactory,
   ProductBrandFactory,
+  UserFactory,
 } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
 import Client from 'App/Models/Client';
+import User from 'App/Models/User';
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 const BASE_PAYLOAD = {
   name: 'André Resende',
@@ -28,10 +30,13 @@ const BASE_PAYLOAD = {
   phoneNumber: '5562999999999',
 };
 
+let token = '';
+
 test.group('Clients', async (group) => {
   test('it should create an client', async (assert) => {
     const { body } = await supertest(BASE_URL)
       .post('/clients')
+      .set('Authorization', `Bearer ${token}`)
       .send(BASE_PAYLOAD)
       .expect(201);
 
@@ -59,6 +64,7 @@ test.group('Clients', async (group) => {
     clientPayload.cpf = client?.cpf!;
     const { body } = await supertest(BASE_URL)
       .post('/clients')
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(409);
 
@@ -70,6 +76,7 @@ test.group('Clients', async (group) => {
   test('it should return 422 when required data is not provided', async (assert) => {
     const { body } = await supertest(BASE_URL)
       .post('/clients')
+      .set('Authorization', `Bearer ${token}`)
       .send({})
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -81,6 +88,7 @@ test.group('Clients', async (group) => {
     clientPayload.name = 'A';
     const { body } = await supertest(BASE_URL)
       .post('/clients')
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -92,6 +100,7 @@ test.group('Clients', async (group) => {
     clientPayload.cpf = '11111111111';
     const { body } = await supertest(BASE_URL)
       .post('/clients')
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -103,6 +112,7 @@ test.group('Clients', async (group) => {
     clientPayload.birthdate = '09-01-1995'; //Correto: 1995-01-09
     const { body } = await supertest(BASE_URL)
       .post('/clients')
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -114,6 +124,7 @@ test.group('Clients', async (group) => {
     clientPayload.sex = 'abc'; //Masculino, Feminino ou Outros
     const { body } = await supertest(BASE_URL)
       .post('/clients')
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -125,6 +136,7 @@ test.group('Clients', async (group) => {
     clientPayload.zipCode = '123';
     const { body } = await supertest(BASE_URL)
       .post('/clients')
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -136,6 +148,7 @@ test.group('Clients', async (group) => {
     clientPayload.state = 'ABC1';
     const { body } = await supertest(BASE_URL)
       .post('/clients')
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -147,6 +160,7 @@ test.group('Clients', async (group) => {
     clientPayload.phoneNumber = '123';
     const { body } = await supertest(BASE_URL)
       .post('/clients')
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -164,7 +178,10 @@ test.group('Clients', async (group) => {
         return address;
       }),
     );
-    const { body } = await supertest(BASE_URL).get('/clients').expect(200);
+    const { body } = await supertest(BASE_URL)
+      .get('/clients')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
     if (!clients || !addresses) {
       assert.fail('Clients or addresses are undefined');
       return;
@@ -208,6 +225,7 @@ test.group('Clients', async (group) => {
     } = BASE_PAYLOAD;
     const { body } = await supertest(BASE_URL)
       .put(`/clients/${client?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({
         name,
         sex,
@@ -248,6 +266,7 @@ test.group('Clients', async (group) => {
 
     const { body } = await supertest(BASE_URL)
       .put(`/clients/${client?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({})
       .expect(422);
 
@@ -262,6 +281,7 @@ test.group('Clients', async (group) => {
 
     const { body } = await supertest(BASE_URL)
       .put(`/clients/${client?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(403);
 
@@ -280,6 +300,7 @@ test.group('Clients', async (group) => {
     };
     const { body } = await supertest(BASE_URL)
       .put(`/clients/${client?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
 
@@ -295,6 +316,7 @@ test.group('Clients', async (group) => {
     };
     const { body } = await supertest(BASE_URL)
       .put(`/clients/${client?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
 
@@ -310,6 +332,7 @@ test.group('Clients', async (group) => {
     };
     const { body } = await supertest(BASE_URL)
       .put(`/clients/${client?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
 
@@ -329,6 +352,7 @@ test.group('Clients', async (group) => {
     };
     const { body } = await supertest(BASE_URL)
       .put(`/clients/${client?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
     await client?.load('addresses');
@@ -345,6 +369,7 @@ test.group('Clients', async (group) => {
     };
     const { body } = await supertest(BASE_URL)
       .put(`/clients/${client?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
     await client?.load('addresses');
@@ -361,6 +386,7 @@ test.group('Clients', async (group) => {
     };
     const { body } = await supertest(BASE_URL)
       .put(`/clients/${client?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(clientPayload)
       .expect(422);
 
@@ -388,6 +414,7 @@ test.group('Clients', async (group) => {
 
     const { body } = await supertest(BASE_URL)
       .get(`/clients/${client?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
     const sortedPurchases = client?.purchases.sort((a, b) => {
@@ -408,12 +435,29 @@ test.group('Clients', async (group) => {
 
     const { body } = await supertest(BASE_URL)
       .delete(`/clients/${client?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
     const searchDeletedClient = await Client.findBy('id', client?.id);
 
     assert.equal(body.message, 'Client deleted successfully');
     assert.notExists(searchDeletedClient);
+  });
+
+  group.before(async () => {
+    const plainPassword = 'test';
+    const _user = await UserFactory.merge({
+      password: plainPassword,
+    }).create();
+    const { body } = await supertest(BASE_URL)
+      .post('/login')
+      .send({ email: _user.email, password: plainPassword })
+      .expect(201);
+    token = body.token.token;
+  });
+
+  group.after(async () => {
+    await User.truncate(true);
   });
 
   group.beforeEach(async () => {

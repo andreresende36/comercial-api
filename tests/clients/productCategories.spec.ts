@@ -1,6 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database';
 import ProductCategory from 'App/Models/ProductCategory';
-import { ProductCategoryFactory } from 'Database/factories';
+import User from 'App/Models/User';
+import { ProductCategoryFactory, UserFactory } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
 
@@ -9,10 +10,13 @@ const BASE_PAYLOAD = {
   categoryName: 'Electronics',
 };
 
+let token = '';
+
 test.group('Product categories', (group) => {
   test('it should create a product category', async (assert) => {
     const { body } = await supertest(BASE_URL)
       .post(`/products/categories`)
+      .set('Authorization', `Bearer ${token}`)
       .send(BASE_PAYLOAD)
       .expect(201);
     assert.exists(body);
@@ -23,6 +27,7 @@ test.group('Product categories', (group) => {
   test('it should return 422 when required data is not provided', async (assert) => {
     const { body } = await supertest(BASE_URL)
       .post(`/products/categories`)
+      .set('Authorization', `Bearer ${token}`)
       .send({})
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -33,6 +38,7 @@ test.group('Product categories', (group) => {
     const categories = await ProductCategoryFactory.createMany(5);
     const { body } = await supertest(BASE_URL)
       .get('/products/categories')
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
     assert.equal(body.categories.length, categories?.length);
     assert.equal(body.categories.length, 5);
@@ -47,6 +53,7 @@ test.group('Product categories', (group) => {
 
     const { body } = await supertest(BASE_URL)
       .put(`/products/categories/${category?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(BASE_PAYLOAD)
       .expect(200);
     assert.equal(body.category.category_name, BASE_PAYLOAD.categoryName);
@@ -56,6 +63,7 @@ test.group('Product categories', (group) => {
     const category = await ProductCategoryFactory.create();
     const { body } = await supertest(BASE_URL)
       .put(`/products/categories/${category?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({})
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -66,6 +74,7 @@ test.group('Product categories', (group) => {
     const category = await ProductCategoryFactory.create();
     const { body } = await supertest(BASE_URL)
       .delete(`/products/categories/${category?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
     const searchDeletedcategory = await ProductCategory.find(category?.id);
     assert.equal(body.message, 'Product category deleted successfully');
@@ -76,8 +85,26 @@ test.group('Product categories', (group) => {
     const category = await ProductCategoryFactory.create();
     const { body } = await supertest(BASE_URL)
       .get(`/products/categories/${category?.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
     assert.deepEqual(category!.serialize(), body.category);
+  });
+
+  group.before(async () => {
+    const plainPassword = 'test';
+    const _user = await UserFactory.merge({
+      password: plainPassword,
+    }).create();
+    const { body } = await supertest(BASE_URL)
+      .post('/login')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ email: _user.email, password: plainPassword })
+      .expect(201);
+    token = body.token.token;
+  });
+
+  group.after(async () => {
+    await User.truncate(true);
   });
 
   group.beforeEach(async () => {

@@ -1,6 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database';
 import Phone from 'App/Models/Phone';
-import { PhoneFactory, ClientFactory } from 'Database/factories';
+import User from 'App/Models/User';
+import { PhoneFactory, ClientFactory, UserFactory } from 'Database/factories';
 import test from 'japa';
 import supertest from 'supertest';
 
@@ -8,12 +9,14 @@ const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 const BASE_PAYLOAD = {
   phoneNumber: '5562999999999',
 };
+let token = '';
 
 test.group('Phones', (group) => {
   test('it should create an phone number', async (assert) => {
     const client = await ClientFactory.create();
     const { body } = await supertest(BASE_URL)
       .post(`/clients/${client?.id}/phones`)
+      .set('Authorization', `Bearer ${token}`)
       .send(BASE_PAYLOAD)
       .expect(201);
     await client?.load('phones');
@@ -29,6 +32,7 @@ test.group('Phones', (group) => {
     const client = await ClientFactory.create();
     const { body } = await supertest(BASE_URL)
       .post(`/clients/${client?.id}/phones`)
+      .set('Authorization', `Bearer ${token}`)
       .send({})
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -39,6 +43,7 @@ test.group('Phones', (group) => {
     const client = await ClientFactory.create();
     const { body } = await supertest(BASE_URL)
       .post(`/clients/${client?.id}/phones`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ phoneNumber: '123' })
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -54,6 +59,7 @@ test.group('Phones', (group) => {
     }
     const { body } = await supertest(BASE_URL)
       .get(`/clients/${client?.id}/phones`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
     await client?.load('phones');
 
@@ -69,6 +75,7 @@ test.group('Phones', (group) => {
     await client?.load('phones');
     const { body } = await supertest(BASE_URL)
       .put(`/clients/phones/${client?.phones[0].id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(BASE_PAYLOAD)
       .expect(200);
     assert.deepEqual(
@@ -86,6 +93,7 @@ test.group('Phones', (group) => {
 
     const { body } = await supertest(BASE_URL)
       .put(`/clients/phones/${client?.phones[0].id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({})
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -101,6 +109,7 @@ test.group('Phones', (group) => {
 
     const { body } = await supertest(BASE_URL)
       .put(`/clients/phones/${client?.phones[0].id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ phoneNumber: '123' })
       .expect(422);
     assert.equal(body.code, 'BAD_REQUEST');
@@ -115,6 +124,7 @@ test.group('Phones', (group) => {
 
     const { body } = await supertest(BASE_URL)
       .delete(`/clients/phones/${client?.phones[0].id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
     const searchDeletedphone = await Phone.find(client?.phones[0].id);
@@ -131,11 +141,29 @@ test.group('Phones', (group) => {
     await client?.load('phones');
     const { body } = await supertest(BASE_URL)
       .get(`/clients/phones/${client?.phones[0].id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
     assert.deepEqual(
       Object.values(client!.phones[0].serialize()),
       Object.values(body.phone),
     );
+  });
+
+  group.before(async () => {
+    const plainPassword = 'test';
+    const _user = await UserFactory.merge({
+      password: plainPassword,
+    }).create();
+    const { body } = await supertest(BASE_URL)
+      .post('/login')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ email: _user.email, password: plainPassword })
+      .expect(201);
+    token = body.token.token;
+  });
+
+  group.after(async () => {
+    await User.truncate(true);
   });
 
   group.beforeEach(async () => {
