@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "build": "node ace build --production",
-    "start": "sh app.sh",
+    "start": "npm install && docker compose up -d",
+    "migration-seed": "node ace migration:rollback --batch=0 && node ace migration:run && node ace db:seed && node ace serve --watch",
     "dev": "node ace serve --watch",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write .",
-    "test": "node -r @adonisjs/assembler/build/register japaFile.ts",
-    "run": "chmod a+x app.sh && ./app.sh"
+    "test": "node -r @adonisjs/assembler/build/register japaFile.ts"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.9.6",
