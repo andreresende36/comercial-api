@@ -23,6 +23,33 @@ Caso não tenha os pré-requisitos instalados, você pode seguir os links abaixo
 - [Como instalar Node.js no Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04)
 - [Como instalar Docker e Docker Compose no Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 
+## Passo a Passo para Instalar e Rodar a API
+
+1. Clone o repositório:
+
+   ```sh
+   git clone https://github.com/andreresende36/ecommerce-api.git
+
+2. Entre no diretório do projeto:
+
+   ```sh
+   cd ecommerce-api
+
+3. Instale as dependências do projeto e crie o container MySQL do Docker:
+
+   ```sh
+   npm start
+
+4. Execute as migrações e seeds para criar e popular o banco de dados:
+
+   ```sh
+   npm run migration-seed
+
+## Uso
+
+Nesse ponto, o banco de dados estará criado, com as devidas tabelas e com alguns dados iniciais para testes. O servidor estará rodando no endereço <http://127.0.0.1:3333>.
+
+
 ## Recursos do AdonisJS utilizados no projeto
 
 - Models
@@ -113,32 +140,6 @@ Disponibilizo abaixo o formato do corpo da requisição para cada uma das Models
   }
 }
 ```
-
-## Passo a Passo para Instalar e Rodar a API
-
-1. Clone o repositório:
-
-   ```sh
-   git clone https://github.com/andreresende36/ecommerce-api
-
-2. Entre no diretório do projeto:
-
-   ```sh
-   cd ecommerce-api
-
-3. Instale as dependências do projeto e crie o container MySQL do Docker:
-
-   ```sh
-   npm start
-
-4. Execute as migrações e seeds para criar e popular o banco de dados:
-
-   ```sh
-   npm run migration-seed
-
-## Uso
-
-Nesse ponto, o banco de dados estará criado, com as devidas tabelas e com alguns dados iniciais para testes. O servidor estará rodando no endereço <http://127.0.0.1:3333>.
 
 ## Rotas da API
 
