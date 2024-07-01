@@ -7,15 +7,12 @@ erDiagram
         string password
         string avatar
     }
-    %% SESSIONS {
-    %%     int ID PK
-    %% }
     CLIENTS {
         int ID PK
         string name
         string cpf
         string sex
-        date birthdate
+        timestamp birthdate
     }
     ADDRESSES {
         int ID PK
@@ -26,6 +23,7 @@ erDiagram
         string zip_code
         string city
         string state
+        string country
         int client_id FK
     }
     PHONES {
@@ -44,25 +42,35 @@ erDiagram
     }
     PRODUCT_CATEGORIES {
         int ID PK
-        string name
+        string category_name
     }
     PRODUCT_BRANDS {
         int ID PK
-        string name
+        string brand_name
     }
     PURCHASES {
         int ID PK
         int quantity
         float unit_price
         float total_price
-        date date
-        time time
+        timestamp date
+        timestamp time
         int client_id FK
         int product_id FK
     }
     LINK_TOKENS {
         int ID PK
-        string token PK
+        string token
+        int user_id FK
+    }
+    JWT_TOKENS {
+        int ID PK
+        string name
+        string type
+        string token
+        timestamp expires_at
+        string refresh_token
+        timestamp refresh_token_expires_at
         int user_id FK
     }
 
@@ -73,4 +81,5 @@ erDiagram
     PRODUCTS }o--|| PRODUCT_CATEGORIES : has
     PRODUCTS }o--|| PRODUCT_BRANDS : has
     USERS ||--o{ LINK_TOKENS : has
+    USERS ||--o{ JWT_TOKENS : has
 ```
