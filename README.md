@@ -188,7 +188,7 @@ Abaixo disponibilizei um mapa mental para servir de guia para entender as rotas 
 - **GET /clients** -> Retorna todos os clientes.
 - **POST /clients** -> Cria um novo cliente.
 - **GET /clients/:id** -> Retorna um cliente específico pelo ID.
-- **GET /clients/:id/?month=XX&year=XX** -> Retorna um cliente específico pelo ID com a possibilidade de filtro de suas compras por mês + ano
+- **GET /clients/:id/?month=XX&year=XXXX** -> Retorna um cliente específico pelo ID com a possibilidade de filtro de suas compras por mês + ano
 - **PUT /clients/:id** -> Atualiza um cliente existente pelo ID.
 - **DELETE /clients/:id** -> Deleta um cliente existente pelo ID.
 
