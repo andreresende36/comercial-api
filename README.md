@@ -62,7 +62,7 @@ Nesse ponto, o banco de dados estará criado, com as devidas tabelas e com algun
 - Migrations
 - Seeds
 
-## Digrama Entidade-relacionamento do banco de dados
+## Diagrama Entidade-relacionamento do banco de dados
 
 Abaixo disponibilizo um diagrama entidade-relacionamento que criei para guiar a contrução do banco de dados e entender a relação entre os modelos do projeto:
 
